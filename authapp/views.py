@@ -205,4 +205,9 @@ class UserDeleteApiView(DestroyAPIView):
 
 
 def robot(request):
-    return render(request, )
+    """
+    Render the robots.txt file
+    :param request:
+    :return: render
+    """
+    return render(request, template_name='robots.txt')
