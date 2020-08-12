@@ -210,4 +210,4 @@ def robot(request):
     :param request:
     :return: render
     """
-    return render(request, template_name='robots.txt')
+    return render(request, template_name='robots.txt', content_type='text/plain', status=Response.status_code)
