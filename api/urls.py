@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from authapp.views import robotm
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/v1/auth/", include('authapp.urls'))
+    path("api/v1/auth/", include('authapp.urls')),
+    path('', include(''))
 ]

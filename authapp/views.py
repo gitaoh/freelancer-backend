@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.utils import timezone
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
@@ -201,3 +202,7 @@ class UserDeleteApiView(DestroyAPIView):
     #             "Status": Response.status_code
     #         }
     #     )
+
+
+def robot(request):
+    return render(request, )

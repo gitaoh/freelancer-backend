@@ -7,5 +7,7 @@ class AccessControlAllowOrigin:
         response['Access-Control-Allow-Origin'] = 'http://127.0.0.1:3000'
         response['Access-Control-Allow-Credentials'] = 'true'
         response['Accept'] = 'application/json'
+        response['X-Robots-Tag'] = 'noarchive'
+        response['X-Robots-Tag'] = 'none'
         response['Access-Control-Allow-Headers'] = 'Origin, Content-Type, Accept'
         return response
