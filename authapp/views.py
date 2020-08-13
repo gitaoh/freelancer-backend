@@ -1,3 +1,4 @@
+from django.http import QueryDict
 from django.shortcuts import render
 from django.utils import timezone
 from knox.auth import TokenAuthentication
@@ -119,7 +120,6 @@ class UserUpdatePasswordApiView(UpdateAPIView):
     lookup_field = "username"
 
     def validate_current_password(self, serializer):
-
         # Check old password
         if not self.object.check_password(serializer.data.get("old_password")):
             return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
@@ -140,13 +140,22 @@ class UserUpdatePasswordApiView(UpdateAPIView):
         return Response(response)
 
     def get_object(self, queryset=None):
-        queryset = self.model.objects.get(useranme=self.request.user, is_active=True)
+        queryset = self.model.objects.get(username=self.request.user, is_active=True)
         return queryset
+
+    def convert_to_query_dict(self, ordinary_dict, *args, **kwargs):
+        query_dict = QueryDict('', mutable=True)
+        query_dict.update(ordinary_dict)
+        return query_dict
 
     def update(self, request, *args, **kwargs):
         self.object = self.get_object()
-        serializer = self.get_serializer(data=request.data)
+        data = request.data
+        #
+        # if type(data) is dict:
+        #     data = self.convert_to_query_dict(request.data)
 
+        serializer = self.get_serializer(data=data)
         if serializer.is_valid(raise_exception=True):
             return self.validate_current_password(serializer)
 

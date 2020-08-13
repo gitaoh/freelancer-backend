@@ -3,7 +3,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from app.abstract import MinimalModel
-from app.choices import NotificationChoices, PreferencesChoices, SpacingChoices, FormatChoices
+from app.choices import NotificationChoices, PreferencesChoices, SpacingChoices, FormatChoices, StatusChoices, \
+    EducationLevelChoices
 from django.conf import settings
 
 
@@ -70,13 +71,13 @@ class Order(MinimalModel):
     """
     Model for orders
     """
-    user = models.ForeignKey(verbose_name="user", to=settings.AUTH_USER_MODEL, on_delete=models.SET(get_sentinel_user),
-                             null=True)
+    user = models.ForeignKey(verbose_name="user", to=settings.AUTH_USER_MODEL, on_delete=models.SET_DEFAULT,
+                             null=True, default=0)
     paper_type = models.CharField(_("paper_type"), max_length=200, null=False, blank=False)
     discipline = models.CharField(_("discipline"), max_length=200, null=False, blank=False, )
-    academic = models.CharField(_("academic"), max_length=200, null=False, blank=False, )
+    academic = models.CharField(_("academic"), choices=EducationLevelChoices.choices, default=EducationLevelChoices.HIGHSCHOOL, max_length=200, null=False, blank=False, )
     title = models.CharField(_("title"), max_length=200, null=False, blank=False)
-    paper_instructions = models.TextField()
+    instructions = models.TextField()
     additional_materials = models.ManyToManyField(OrderFiles, blank=True)
 
     paper_format = models.CharField(choices=FormatChoices.choices, default=FormatChoices.MLA, blank=False,
@@ -95,7 +96,12 @@ class Order(MinimalModel):
     smart = models.BooleanField(default=False)
     progressive = models.BooleanField(default=False)
 
+    status = models.CharField(choices=StatusChoices.choices, default=StatusChoices.ACTIVE, blank=False, max_length=10)
+
     payments_url = models.URLField(_('payment_url'), blank=True, null=True, unique=True)
+
+    cost = models.PositiveIntegerField(blank=True)
+
     # :notifications about this order
     is_smart_paper = models.BooleanField(
         default=False,
@@ -128,9 +134,16 @@ class Order(MinimalModel):
         default=False,
         help_text=_('Whether an order is or was a revision.'),
     )
+    is_paper = models.BooleanField(default=True, help_text=_('Whether a paper id deleted/canceled.'))
 
     def __str__(self):
         return f"{self.discipline}, {self.paper_type}"
+
+    def trash(self):
+        if self.is_paper:
+            self.is_paper = False
+            self.deletedAt = timezone.now
+            self.save()
 
     class Meta:
         verbose_name = _('Order')
@@ -157,3 +170,17 @@ class Notification(MinimalModel):
         verbose_name = _('Notification')
         verbose_name_plural = _('Notifications')
         db_table = "Notification"
+
+
+class Rating(MinimalModel):
+    rate = models.PositiveIntegerField()
+    client = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.SET_DEFAULT,
+                               default='deleted')
+
+    def __str__(self):
+        return f"{self.rate}{self.client}"
+
+    class Meta:
+        verbose_name = _('Rating')
+        verbose_name_plural = _('Ratings')
+        db_table = 'Rating'

@@ -20,13 +20,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://freelancer-web-app.herokuapp.com/']
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = "C2LUQecD4QKoDz-0XtbRJ1m5n_uPmE7OGWurK4BLA4Q"
+
+if not DEBUG:
+    SECRET_KEY = os.environ['SECRET_KEY']
+
+ALLOWED_HOSTS = []
+
+if not DEBUG:
+    ALLOWED_HOSTS.append(os.environ.get('BackendAppUrl'))
 
 # Application definition
 
@@ -57,10 +63,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+WHITELIST_URL = ("http://127.0.0.1:3000",)
 
-CORS_ORIGIN_WHITELIST = (
-    'https://freelancer-web-app.herokuapp.com',
-)
+if not DEBUG:
+    WHITELIST_URL = (os.environ.get('FrontEndUrl'),)
+
+CORS_ORIGIN_WHITELIST = WHITELIST_URL
 
 AUTH_USER_MODEL = "authapp.User"
 
@@ -103,7 +111,7 @@ WSGI_APPLICATION = 'api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kromon',
+        'NAME': 'freelancer',
         'HOST': '127.0.0.1',
         'USER': 'postgres',
         'PORT': '5432',
@@ -155,12 +163,13 @@ REST_FRAMEWORK = {
 REST_KNOX = {
     'AUTH_TOKEN_CHARACTER_LENGTH': 128,
     'TOKEN_TTL': timedelta(days=3),
-    'TOKEN_LIMIT_PER_USER': None,
+    'TOKEN_LIMIT_PER_USER': 10,
     'AUTO_REFRESH': True,
     'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

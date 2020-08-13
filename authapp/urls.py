@@ -2,7 +2,7 @@ from .views import RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApi
 from django.urls import path, include
 from knox import views as knox_views
 
-app_label = 'authapp'
+app_name = 'authapp'
 
 urlpatterns = [
     path('register', RegisterAPI.as_view(), name='register-auth-app'),
@@ -10,7 +10,7 @@ urlpatterns = [
     path('logout', knox_views.LogoutView.as_view(), name='logout'),
     path('logoutall', knox_views.LogoutAllView.as_view(), name='logout-all'),
     path('user', AuthUserAPIView.as_view(), name='retrieve-user'),
-    path('users/reset-password/<str:username>', UserUpdatePasswordApiView.as_view(), name='update-user-password'),
+    path('users/password/reset/<str:username>', UserUpdatePasswordApiView.as_view(), name='update-user-password'),
     path('users/delete/<str:username>', UserDeleteApiView.as_view(), name='delete-user'),
-    path('password_reset', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    path('forgot/password/reset', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]

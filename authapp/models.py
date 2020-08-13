@@ -1,5 +1,6 @@
 from django.core.validators import MaxLengthValidator, RegexValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 from app.abstract import MinimalModel
@@ -15,10 +16,9 @@ from django.core.mail import send_mail
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
     email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'),
                                                    reset_password_token.key)
-
     send_mail(
         # title:
-        "Password Reset for {title}".format(title="Some website title"),
+        "Password Reset for {title}".format(title="Kromon"),
         # message:
         email_plaintext_message,
         # from:
@@ -78,6 +78,7 @@ class User(AbstractUser, MinimalModel):
     def deactivate(self):
         if self.is_active:
             self.is_active = False
+            self.deletedAt = timezone.now
             self.save()
 
     class Meta:
