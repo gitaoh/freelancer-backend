@@ -65,7 +65,7 @@ MIDDLEWARE = [
 ]
 WHITELIST_URL = ("http://127.0.0.1:3000",)
 
-if not DEBUG:
+if os.environ.get("FrontEndUrl"):
     WHITELIST_URL = (os.environ.get('FrontEndUrl'),)
 
 CORS_ORIGIN_WHITELIST = WHITELIST_URL
