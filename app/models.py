@@ -178,11 +178,11 @@ class Rating(MinimalModel):
     Custom rating from the user when they delete their account
     """
     rate = models.PositiveIntegerField()
-    client = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.SET_DEFAULT,
+    customer = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.SET_DEFAULT,
                                default='deleted')
 
     def __str__(self):
-        return f"{self.rate}{self.client}"
+        return f"{self.rate}{self.customer}"
 
     class Meta:
         verbose_name = _('Rating')
