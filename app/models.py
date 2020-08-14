@@ -179,7 +179,7 @@ class Rating(MinimalModel):
     """
     rate = models.PositiveIntegerField()
     customer = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.SET_DEFAULT,
-                               default='deleted')
+                                 default='deleted')
 
     def __str__(self):
         return f"{self.rate}{self.customer}"
