@@ -75,13 +75,14 @@ class Order(MinimalModel):
                              null=True, default=0)
     paper_type = models.CharField(_("paper_type"), max_length=200, null=False, blank=False)
     discipline = models.CharField(_("discipline"), max_length=200, null=False, blank=False, )
-    academic = models.CharField(_("academic"), choices=EducationLevelChoices.choices, default=EducationLevelChoices.HIGHSCHOOL, max_length=200, null=False, blank=False, )
+    academic = models.CharField(_("academic"), choices=EducationLevelChoices.choices,
+                                default=EducationLevelChoices.HIGHSCHOOL, max_length=200, null=False, blank=False, )
     title = models.CharField(_("title"), max_length=200, null=False, blank=False)
     instructions = models.TextField()
     additional_materials = models.ManyToManyField(OrderFiles, blank=True)
 
     format = models.CharField(choices=FormatChoices.choices, default=FormatChoices.MLA, blank=False,
-                                    max_length=30)
+                              max_length=30)
     spacing = models.CharField(choices=SpacingChoices.choices, default=SpacingChoices.SINGLE, blank=False,
                                max_length=10)
     preference = models.CharField(choices=PreferencesChoices.choices, default=PreferencesChoices.BEST, blank=False,
