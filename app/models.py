@@ -80,7 +80,7 @@ class Order(MinimalModel):
     instructions = models.TextField()
     additional_materials = models.ManyToManyField(OrderFiles, blank=True)
 
-    paper_format = models.CharField(choices=FormatChoices.choices, default=FormatChoices.MLA, blank=False,
+    format = models.CharField(choices=FormatChoices.choices, default=FormatChoices.MLA, blank=False,
                                     max_length=30)
     spacing = models.CharField(choices=SpacingChoices.choices, default=SpacingChoices.SINGLE, blank=False,
                                max_length=10)
@@ -173,6 +173,9 @@ class Notification(MinimalModel):
 
 
 class Rating(MinimalModel):
+    """
+    Custom rating from the user when they delete their account
+    """
     rate = models.PositiveIntegerField()
     client = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.SET_DEFAULT,
                                default='deleted')
