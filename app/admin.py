@@ -4,7 +4,8 @@ from .models import (
     Order,
     Discipline,
     Notification,
-    OrderFiles
+    OrderFiles,
+    Rating,
 )
 
 # Register your models here.
@@ -13,3 +14,4 @@ admin.site.register(Notification)
 admin.site.register(Order)
 admin.site.register(PaperType)
 admin.site.register(Discipline)
+admin.site.register(Rating)
