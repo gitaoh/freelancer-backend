@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/v1/auth/", include('authapp.urls')),
     path("api/v1/", include('app.urls')),
+    path("api/v1/orders/", include('order.urls')),
     path('robots.txt', robot)
 ]

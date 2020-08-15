@@ -31,7 +31,7 @@ if not DEBUG:
 
 ALLOWED_HOSTS = []
 
-if not DEBUG:
+if os.environ.get("FrontEndUrl"):
     ALLOWED_HOSTS.append(os.environ.get('BackendAppUrl'))
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authapp.apps.AuthappConfig',
     'app.apps.AppConfig',
+    'order.apps.OrderConfig',
     'knox',
     'corsheaders',
     'rest_framework',
@@ -86,6 +87,8 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'api.urls'
+
+ADMINS = [(os.environ.get('ADMIN_ONE'), os.environ.get('ADMIN_ONE_EMAIL')), (os.environ.get('ADMIN_TWO'), os.environ.get('ADMIN_TWO_EMAIL'))]
 
 TEMPLATES = [
     {

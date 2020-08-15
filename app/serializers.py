@@ -62,18 +62,6 @@ class PaperTypeSerializer(serializers.ModelSerializer):
         super(PaperTypeSerializer, self).__init__(*args, **kwargs)
 
 
-class OrderFilesSerializer(serializers.ModelSerializer):
-    uuid = serializers.UUIDField()
-
-    class Meta:
-        model = OrderFiles
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        uuid_func(kwargs=kwargs)
-        super(OrderFilesSerializer, self).__init__(*args, **kwargs)
-
-
 class DisciplineSerializer(serializers.ModelSerializer):
     uuid = serializers.UUIDField()
 
@@ -95,15 +83,3 @@ class LoginUserSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise exceptions.ValidationError("Unable to login with given credentials")
-
-
-class OrderSerializer(serializers.ModelSerializer):
-    uuid = serializers.UUIDField()
-
-    class Meta:
-        model = Order
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        uuid_func(kwargs=kwargs)
-        super(OrderSerializer, self).__init__(*args, **kwargs)
