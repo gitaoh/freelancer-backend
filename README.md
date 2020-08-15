@@ -1,7 +1,5 @@
 <p align="center">
-    <a href="https://freelancer-web-app.herokuapp.com">
-        <img src="https://raw.githubusercontent.com/IAmGitau/freelancer-backend/master/templates/img/kromon.svg?token=AMBMPXS4ZZ6KR446J7FTE327HAP4W">
-    </a>
+    <img src="https://raw.githubusercontent.com/IAmGitau/freelancer-backend/master/templates/img/kromon.svg?token=AMBMPXS4ZZ6KR446J7FTE327HAP4W">
     <br>
     <img height="20px" src="https://api.netlify.com/api/v1/badges/88afbb86-1657-4de0-b211-79371fd3004a/deploy-status">
     <img height="20px" src="https://github.com/IAmGitau/freelancer-backend/workflows/Running%20Unit%20Tests/badge.svg?branch=master">
