@@ -1,4 +1,4 @@
-name: Running Unit Tests
+name: Django CI
 
 on:
   push:
@@ -7,23 +7,24 @@ on:
     branches: [ master ]
 
 jobs:
-  tests:
-    needs: lint
+  build:
+
     runs-on: ubuntu-latest
-    name: Running Unit Tests
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.8, 3.7]
+        python-version: [3.6, 3.7, 3.8]
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Run Tests
-        run: python manage.py test
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run Tests
+      run: |
+        python manage.py test
