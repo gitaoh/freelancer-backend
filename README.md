@@ -12,7 +12,7 @@ Kromon is a growing 🚀 custom paper writing company. Ready to work for custome
 
 ## 🚧 Setup the project locally
 
-    Conda create -n env python=3.8
+    conda create -n env python=3.8
     pip install -r requirements.txt
    
    or 
