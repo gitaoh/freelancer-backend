@@ -22,7 +22,7 @@ Kromon is a growing 🚀 custom paper writing company. Ready to work for custome
     or
     python manage.py runserver
 
-## 🔥 Run tests for the application
+## 🧪 Run tests for the application
     make test
     or
     python manage.py test
