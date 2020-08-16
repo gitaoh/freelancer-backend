@@ -2,9 +2,9 @@ name: Linting
 
 on:
   push:
-    branches: [ master ]
+    branches: [ order ]
   pull_request:
-    branches: [ master ]
+    branches: [ order ]
 
 jobs:
   lint:
