@@ -14,18 +14,23 @@ Kromon is a growing 🚀 custom paper writing company. Ready to work for custome
 
     Conda create -n env python=3.8
     pip install -r requirements.txt
-    or 
+   
+   or 
+    
     make setup
     
 ## 🔥 Run the application
     make serve
-    or
-    python manage.py runserver
+   or
+      
+      python manage.py runserver
 
 ## 🧪 Run tests for the application
     make test
-    or
-    python manage.py test
+   or  
+      
+      python manage.py test
+
 
 ## Authors
  - Developer - Joseph Gitau
