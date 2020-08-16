@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from order.models import Order, OrderFiles
+from order.models import Order, Files, Notification
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -16,12 +16,21 @@ class OrderFilesSerializer(serializers.ModelSerializer):
     """
     serializer for the orderFiles model
     """
+
     # uuid = serializers.UUIDField()
 
     class Meta:
-        model = OrderFiles
+        model = Files
         fields = "__all__"
     #
     # def __init__(self, *args, **kwargs):
     #     uuid_func(kwargs=kwargs)
     #     super(OrderFilesSerializer, self).__init__(*args, **kwargs)
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    uuid = serializers.UUIDField()
+
+    class Meta:
+        model = Notification
+        fields = "__all__"

@@ -14,7 +14,7 @@ test:
 
 server:
 	@echo Running Server
-	python manage.py runserver --force-color
+	python manage.py runserver
 
 db:
 	@echo Makemigrations
@@ -25,3 +25,12 @@ db:
 super:
 	@echo Create superuser
 	python manage.py createsuperuser
+
+setup:
+	@echo project setup
+	@echo Setting up conda env
+	conda create -n freelacer python=3.8
+	@echo Activating conda env
+	conda activate freelacer
+	@echo Installing dependencies
+	pip install -r requrements.txt

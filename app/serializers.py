@@ -6,10 +6,7 @@ from django.utils.html import strip_tags
 from rest_framework import serializers
 from .models import (
     Discipline,
-    Order,
     PaperType,
-    Notification,
-    OrderFiles
 )
 from rest_framework import exceptions
 
@@ -38,18 +35,6 @@ def uuid_func(kwargs):
             kwargs['data']['uuid'] = uu.uuid4()
 
 
-class NotificationSerializer(serializers.ModelSerializer):
-    uuid = serializers.UUIDField()
-
-    class Meta:
-        model = Notification
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        uuid_func(kwargs=kwargs)
-        super(NotificationSerializer, self).__init__(*args, **kwargs)
-
-
 class PaperTypeSerializer(serializers.ModelSerializer):
     uuid = serializers.UUIDField()
 
@@ -57,9 +42,9 @@ class PaperTypeSerializer(serializers.ModelSerializer):
         model = PaperType
         fields = "__all__"
 
-    def __init__(self, *args, **kwargs):
-        uuid_func(kwargs=kwargs)
-        super(PaperTypeSerializer, self).__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs):
+    #     uuid_func(kwargs=kwargs)
+    #     super(PaperTypeSerializer, self).__init__(*args, **kwargs)
 
 
 class DisciplineSerializer(serializers.ModelSerializer):

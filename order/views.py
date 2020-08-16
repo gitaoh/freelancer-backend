@@ -4,7 +4,7 @@ from rest_framework.generics import (
     ListCreateAPIView, RetrieveAPIView, )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import OrderSerializer, OrderFilesSerializer
-from .models import OrderFiles, Order
+from .models import Files, Order
 from authapp.permissions.permissions import IsMiniAdmin, IsUser, IsMasterAdmin
 
 
@@ -39,7 +39,7 @@ class UsersSpecificOrders(ListAPIView):
 
 class GetOrdersApiView(ListAPIView):
     """
-    List: list of all order by admins
+    List: list of all orders
     """
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsMiniAdmin | IsAdminUser | IsMasterAdmin)
@@ -129,7 +129,7 @@ class OrderFilesApiView(ListCreateAPIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsUser | IsMiniAdmin | IsMasterAdmin)
     serializer_class = OrderFilesSerializer
-    model = OrderFiles
+    model = Files
     http_method_names = ['get', 'post']
 
     def get_queryset(self):
@@ -145,7 +145,7 @@ class OrderFilesDeleteApiView(RetrieveDestroyAPIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsUser | IsMiniAdmin | IsMasterAdmin)
     serializer_class = OrderFilesSerializer
-    model = OrderFiles
+    model = Files
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
 

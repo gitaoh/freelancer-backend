@@ -45,7 +45,8 @@ class Rating(MinimalModel):
     """
     Custom rating from the user when they delete their account
     """
-    rate = models.PositiveIntegerField()
+    # Not more tha 10 in count
+    rate = models.PositiveIntegerField(max_length=2)
     client = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.SET_DEFAULT,
                                default='deleted')
 

@@ -10,24 +10,9 @@
 Kromon is a growing 🚀 custom paper writing company. Ready to work for customer all over the world. We mainly focus on writing for english speaking countries or students.
 </p>
 
-## 🚧 Setup the project locally
+## 🎯 Templates
 
-    Conda create -n env python=3.8
-    pip install -r requirements.txt
-    or 
-    make setup
-    
-## 🔥 Run the application
-    make serve
-    or
-    python manage.py runserver
-
-## 🔥 Run tests for the application
-    make test
-    or
-    python manage.py test
-
-## Authors
- - Developer - Joseph Gitau
- - Work - Fullstack Developer
- - Github - ![link](https://github.com/IAmGitau)
+### This folder currently contains:
+ - Email templates 
+ - Images
+ - Robots.txt

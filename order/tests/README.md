@@ -10,24 +10,24 @@
 Kromon is a growing 🚀 custom paper writing company. Ready to work for customer all over the world. We mainly focus on writing for english speaking countries or students.
 </p>
 
-## 🚧 Setup the project locally
+## 🧪 Tests
 
-    Conda create -n env python=3.8
-    pip install -r requirements.txt
-    or 
-    make setup
-    
-## 🔥 Run the application
-    make serve
-    or
-    python manage.py runserver
+#### 🍒 Models Folder
+This folder contains all tests for all the orders defined in this app models file. Each models will have all its test in a single test file
 
-## 🔥 Run tests for the application
+#### 🥗 View Folder
+This folder contains all tests for all the views defined in this app views file. Each view will have all its test in a single test file
+
+#### 🍳 Urls File
+This file contains all tests for all the urls endpoints defined in this app urls file.
+
+
+## 💨 Run tests
+
     make test
-    or
+    or 
     python manage.py test
+    
+## 🍜 Run tests this application
 
-## Authors
- - Developer - Joseph Gitau
- - Work - Fullstack Developer
- - Github - ![link](https://github.com/IAmGitau)
+    python manage.py test order

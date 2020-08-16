@@ -1,11 +1,13 @@
 from django.contrib import admin
 from .models import (
-    OrderFiles,
+    Files,
     Order,
-    Notification
+    Notification,
+    Writer
 )
 
 # Register your models here.
-admin.site.register(OrderFiles)
+admin.site.register(Files)
 admin.site.register(Notification)
 admin.site.register(Order)
+admin.site.register(Writer)

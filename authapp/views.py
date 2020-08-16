@@ -21,6 +21,9 @@ from .models import User
 
 # Register API
 class RegisterAPI(GenericAPIView):
+    """
+    Register a new user to the server
+    """
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
     serializer_class = AuthRegisterSerializer
@@ -42,6 +45,9 @@ class RegisterAPI(GenericAPIView):
 
 
 class LoginAPI(KnoxLoginView):
+    """
+    Login a user to the server
+    """
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -112,6 +118,9 @@ class UserApiView(ListAPIView):
 
 
 class UserUpdatePasswordApiView(UpdateAPIView):
+    """
+    update logged in user password
+    """
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsUser)
     model = User
