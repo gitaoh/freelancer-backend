@@ -30,4 +30,4 @@ Kromon is a growing 🚀 custom paper writing company. Ready to work for custome
 ## Authors
  - Developer - Joseph Gitau
  - Work - Fullstack Developer
- - Github - ![link](https://github.com/IAmGitau)
+ - Github - [IAmGitau](https://github.com/IAmGitau)
