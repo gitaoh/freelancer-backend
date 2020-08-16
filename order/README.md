@@ -77,12 +77,12 @@ This a list of the models in the orders applications with their fields with a sm
 
 Urls defined in order application
  
-Endpoint | Descriptions
---- | ---
-/ | GET -> Allows user/clients to retrieve details/information of a all orders specific to them 
-/create | POST -> Allows user/clients to create an order
-/details/<uuid:uuid> | GET -> Allows user/clients to retrieve details/information of a single specific order
-/delete/<uuid:uuid> | DELETE -> Allows user/clients to delete an order
+Endpoint | HTTP Methods | Descriptions
+--- | --- | ---
+/ | GET | Allows user/clients to retrieve details/information of a all orders specific to them 
+/create | POST | Allows user/clients to create an order
+/details/<uuid:uuid> | GET | Allows user/clients to retrieve details/information of a single specific order
+/delete/<uuid:uuid> | DELETE | Allows user/clients to delete an order
  
 ## 🛴 Choices
 

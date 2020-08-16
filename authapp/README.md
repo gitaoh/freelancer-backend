@@ -70,16 +70,16 @@ This a list of the models in the authapp applications with their fields with a s
 
 Urls defined in order application
  
-Endpoint | Descriptions
---- | ---
-/register | POST -> Allows potential client to register to the server 
-/login | POST -> Allows user/clients to login to the server
-/logout | POST -> Allows user/clients to logout user out of the server
-/logoutall | POST -> Allows an admin to logout all users on the platform
-/user | GET -> Allows frontend to retrieve logged in user information
-/users/password/reset/<str:username> | PUT PATCH -> Allows user to change their password
-/users/delete/<str:username> | DELETE -> Allows user to delete their account 
-/forgot/password/reset | POST -> Allows user to reset their password through email if they forgot 
+Endpoint | HTTP Method | Descriptions
+--- | --- | ---
+/register | POST | Allows potential client to register to the server 
+/login | POST | Allows user/clients to login to the server
+/logout | POST | Allows user/clients to logout user out of the server
+/logoutall | POST | Allows an admin to logout all users on the platform
+/user | GET | Allows frontend to retrieve logged in user information
+/users/password/reset/<str:username> | PUT PATCH | Allows user to change their password
+/users/delete/<str:username> | DELETE | Allows user to delete their account 
+/forgot/password/reset | POST | Allows user to reset their password through email if they forgot 
  
 ## 🛴 Choices
 
