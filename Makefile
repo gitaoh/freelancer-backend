@@ -10,7 +10,7 @@ help:
 
 test:
 	@echo Running Tests
-	python manage.py test --pattern="test_*.py" --verbosity 3
+	python manage.py test --pattern="test_*.py"
 
 server:
 	@echo Running Server

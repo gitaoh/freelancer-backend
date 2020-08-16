@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from app.abstract import MinimalModel
@@ -46,7 +47,9 @@ class Rating(MinimalModel):
     Custom rating from the user when they delete their account
     """
     # Not more tha 10 in count
-    rate = models.PositiveIntegerField(max_length=2)
+    rate = models.PositiveIntegerField(validators=[
+        MaxValueValidator(limit_value=10, message='Rating cannot be more than ten.')
+    ])
     client = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.SET_DEFAULT,
                                default='deleted')
 
