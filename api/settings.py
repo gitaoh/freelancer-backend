@@ -13,9 +13,6 @@ from datetime import timedelta
 from rest_framework.settings import api_settings
 import os
 import django_heroku
-from django.conf import settings
-
-settings.configure(DEBUG=True)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,6 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+if os.getenv('FrontEndUrl'):
+    DEBUG = False
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "C2LUQecD4QKoDz-0XtbRJ1m5n_uPmE7OGWurK4BLA4Q"
 
@@ -35,7 +35,7 @@ if not DEBUG:
 ALLOWED_HOSTS = []
 
 if os.environ.get("FrontEndUrl"):
-    ALLOWED_HOSTS.append(os.environ.get('BackendAppUrl'))
+    ALLOWED_HOSTS = [os.environ.get('BackendAppUrl')]
 
 # Application definition
 
@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
 ]
 WHITELIST_URL = ("http://127.0.0.1:3000",)
 
@@ -91,7 +92,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'api.urls'
 
-ADMINS = [(os.environ.get('ADMIN_ONE'), os.environ.get('ADMIN_ONE_EMAIL')), (os.environ.get('ADMIN_TWO'), os.environ.get('ADMIN_TWO_EMAIL'))]
+ADMINS = [(os.environ.get('ADMIN_ONE'), os.environ.get('ADMIN_ONE_EMAIL')),
+          (os.environ.get('ADMIN_TWO'), os.environ.get('ADMIN_TWO_EMAIL'))]
 
 TEMPLATES = [
     {

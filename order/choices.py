@@ -26,9 +26,9 @@ class StatusChoices(models.TextChoices):
     """
     Type of Different states of an order
     """
+    ACTIVE = 'ACTIVE', _('ACTIVE')  # Order recently created and paid for.
     DRAFT = 'DRAFT', _('DRAFT')  # Order created by user by not submitted
     REVISION = 'REVISION', _('REVISION')  # Orders on revision
-    ACTIVE = 'ACTIVE', _('ACTIVE')  # Order recently created and paid for.
     FINISHED = 'FINISHED', _('FINISHED')  # Orders successfully finished/worded on
     CANCELED = 'CANCELED', _('CANCELED')  # Orders canceled by user/Admin
     DISPUTE = 'DISPUTE', _('DISPUTE')  # Orders disputed by user/client

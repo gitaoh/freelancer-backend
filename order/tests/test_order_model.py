@@ -27,8 +27,6 @@ class OrderModelTestCase(TestCase):
         self.assertEqual(meta.verbose_name, 'Order')
         self.assertEqual(meta.verbose_name_plural, 'Orders')
         self.assertEqual(meta.db_table, 'Order')
-        # self.assertTrue(isinstance(meta.order_with_respect_to, User))
-        # self.assertEqual(meta.order_with_respect_to, 'user')
 
     def test_number_or_fields_(self):
         """
@@ -59,7 +57,6 @@ class OrderModelTestCase(TestCase):
         self.assertIsNone(objects.deletedAt)
         self.assertTrue(objects.is_paper)
         objects.trash()
-        print(objects.deletedAt)
         self.assertIsNotNone(objects.deletedAt)
         self.assertFalse(objects.is_paper)
 

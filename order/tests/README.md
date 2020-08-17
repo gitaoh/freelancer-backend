@@ -12,13 +12,13 @@ Kromon is a growing 🚀 custom paper writing company. Ready to work for custome
 
 ## 🧪 Tests
 
-#### 🍒 Models Folder
+#### 🍒 _model File
 This folder contains all tests for all the orders defined in this app models file. Each models will have all its test in a single test file
 
-#### 🥗 View Folder
+#### 🥗 _view File
 This folder contains all tests for all the views defined in this app views file. Each view will have all its test in a single test file
 
-#### 🍳 Urls File
+#### 🍳 _url File
 This file contains all tests for all the urls endpoints defined in this app urls file.
 
 
