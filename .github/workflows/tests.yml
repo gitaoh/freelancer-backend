@@ -1,27 +1,35 @@
 name: Unit Tests
+
 on:
   push:
     branches: [ develop ]
   pull_request:
     branches: [ develop ]
+
 jobs:
+
   build:
-    runs-on: ${{ matrix.platform }}
+
     strategy:
       max-parallel: 4
       matrix:
         python-version: [3.6, 3.7, 3.8]
         platform: [ubuntu-latest]
+
+    runs-on: ${{ matrix.platform }}
+
     services:
       postgres:
-        images: postgres
-        port:
+        image: postgres
+        ports:
           - 5432:5432
         env:
-          POSTGRES_DB: freelancer
+          POSTGRES_DB: freelacer
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 50391798
+
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
