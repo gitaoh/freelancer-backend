@@ -29,7 +29,7 @@ class OrdersUrlsTestCase(TestCase):
     def test_single_user_order_url_endpoint(self):
         response = resolve(self.single_user_order)
         self.app_name_namespace(response=response)
-        self.assertEquals(response.func.view_class, SingleUsersSpecificOrdersApiView,
+        self.assertEqual(response.func.view_class, SingleUsersSpecificOrdersApiView,
                           msg="Route to Fetch a single order View has changed")
         self.assertEqual(response.url_name, 'single-user-order',
                          msg='Route name to Fetch a single order for the user has changed.')

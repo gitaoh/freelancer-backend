@@ -45,7 +45,7 @@ class AuthAppUrlsTestCase(TestCase):
         if args is None:
             args = ()
         self.app_name_namespace(response)
-        self.assertEquals(response.func.view_class, view_class)
+        self.assertEqual(response.func.view_class, view_class)
         self.assertEqual(response.args, args, msg=f'Auth {test_name} api endpoint accepts arguments')
         self.assertEqual(response.kwargs, kwargs,
                          msg=f'Auth app {test_name} api endpoint accepts some keyword arguments')
