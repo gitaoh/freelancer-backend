@@ -47,29 +47,10 @@ class User(AbstractUser, MinimalModel):
                                             inverse_match=False)
                                     ])
 
-    updates = models.BooleanField(
-        _("updates"),
-        default=True,
-        help_text=_(
-            "Send updates to user about our services"
-        ),
-    )
-    user_type = models.CharField(
-        _('type'),
-        default=AdminCategory.USER,
-        choices=AdminCategory.choices,
-        max_length=6,
-        help_text=_(
-            'Define the type of the user :User always'
-        ),
-    )
-    terms = models.BooleanField(
-        _("terms"),
-        default=True,
-        help_text=_(
-            "Agreement on our platform terms and conditions"
-        ),
-    )
+    updates = models.BooleanField(_("updates"), default=True, help_text=_("Send updates to user about our services"))
+    user_type = models.CharField(_('type'), default=AdminCategory.USER, choices=AdminCategory.choices, max_length=6,
+                                 help_text=_('Define the type of the user :User always'))
+    terms = models.BooleanField(_("terms"), default=True, help_text=_("Agreement on our platform terms and conditions"))
     # TODO: Loop over the data to find the different discipline/ topics the user like to order their paper with.
     # discipline = models.ManyToManyField(verbose_name="disciplines", to=app.Discipline, blank=True)
     # topic = models.ManyToManyField(verbose_name="topics", to=app.PaperType, blank=True)
@@ -107,11 +88,11 @@ class Avatar(MinimalModel):
 
 class Defaults(MinimalModel):
     """
-    Defaults tah a User can place
+    Defaults that a User can place
     """
-    user = models.ForeignKey(to=User, on_delete=models.SET_DEFAULT, default=0,
+    user = models.ForeignKey(to=User, on_delete=models.SET_DEFAULT, default='deleted',
                              limit_choices_to={'is_active': True, 'is_staff': False}, to_field='username')
-    writer = models.ForeignKey(to_field='username', to=Writer, on_delete=models.SET_DEFAULT, default=0,
+    writer = models.ForeignKey(to_field='username', to=Writer, on_delete=models.SET_DEFAULT, default='deleted',
                                limit_choices_to={'is_active': True})
     academic = models.CharField(choices=EducationLevelChoices.choices, default=None, null=True, blank=True,
                                 max_length=17, help_text=_('Client default academic level'))

@@ -2,9 +2,9 @@ name: Linting
 
 on:
   push:
-    branches: [ auth ]
+    branches: [ develop ]
   pull_request:
-    branches: [ auth ]
+    branches: [ develop ]
 
 jobs:
   lint:

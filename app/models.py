@@ -51,10 +51,10 @@ class Rating(MinimalModel):
         MaxValueValidator(limit_value=10, message='Rating cannot be more than ten.')
     ])
     client = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.SET_DEFAULT,
-                               default='deleted')
+                               default=None, null=True)
 
     def __str__(self):
-        return f"{self.rate}{self.client}"
+        return f"{self.rate}, {self.client}"
 
     class Meta:
         verbose_name = _('Rating')

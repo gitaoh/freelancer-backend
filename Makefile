@@ -10,7 +10,7 @@ help:
 
 test:
 	@echo Running Tests
-	python manage.py test --pattern="test_*.py"
+	python manage.py test
 
 server:
 	@echo Running Server
@@ -22,6 +22,11 @@ db:
 	@echo Migrate
 	python manage.py migrate
 
+cov:
+	@echo Code Coverage
+	coverage run -m pytest
+	coverage erase
+	coverage html
 super:
 	@echo Create superuser
 	python manage.py createsuperuser

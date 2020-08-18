@@ -99,9 +99,9 @@ class PaperTypeModelTestcase(TestCase):
         Test that no discipline should have it's unique name
         """
         pass
-        try:
-            mixer.blend(self.model, name=self.default)
-        except Exception as e:
-            print(e)
-            self.assertRaises(IntegrityError)
-            self.assertEqual(e, IntegrityError)
+        # try:
+        #     mixer.blend(self.model, name=self.default)
+        # except Exception as e:
+        #     print(e)
+        #     self.assertRaises(IntegrityError)
+        #     self.assertEqual(e, IntegrityError)
