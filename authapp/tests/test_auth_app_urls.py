@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
+from authapp.views import RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView
+from knox import views as knox_views
 
 
 class AuthAppUrlsTestCase(TestCase):
@@ -33,7 +35,7 @@ class AuthAppUrlsTestCase(TestCase):
                          msg="Auth app name and its namespace are not the same ::=> should be.")
         self.assertIn(response.namespace, response.app_names, msg="Auth app namespace not in app_names ::=> should be.")
 
-    def common_test_case_auth_app(self, test_name, route_name, route, url_name, kwargs=None, args=None):
+    def common_test_case_auth_app(self, test_name, route_name, route, url_name, view_class, kwargs=None, args=None):
         """
         Common test cases found in this testcase
         """
@@ -43,6 +45,7 @@ class AuthAppUrlsTestCase(TestCase):
         if args is None:
             args = ()
         self.app_name_namespace(response)
+        self.assertEquals(response.func.view_class, view_class)
         self.assertEqual(response.args, args, msg=f'Auth {test_name} api endpoint accepts arguments')
         self.assertEqual(response.kwargs, kwargs,
                          msg=f'Auth app {test_name} api endpoint accepts some keyword arguments')
@@ -54,43 +57,44 @@ class AuthAppUrlsTestCase(TestCase):
         Test the register api endpoint configured fields ie route, name, endpoint
         """
         self.common_test_case_auth_app(test_name="register", route_name=self.register, route='api/v1/auth/register',
-                                       url_name="register-auth-app")
+                                       url_name="register-auth-app", view_class=RegisterAPI)
 
     def test_login_api_endpoint(self):
         """
         Test the login api endpoint configured fields ie route, name, endpoint
         """
         self.common_test_case_auth_app(test_name="login", route_name=self.login, route='api/v1/auth/login',
-                                       url_name="login")
+                                       url_name="login", view_class=LoginAPI)
 
     def test_logout_api_endpoint(self):
         """
         Test the logout api endpoint configured fields ie route, name, endpoint
         """
         self.common_test_case_auth_app(test_name="logout", route_name=self.logout, route='api/v1/auth/logout',
-                                       url_name="logout")
+                                       url_name="logout", view_class=knox_views.LogoutView)
 
     def test_logout_all_api_endpoint(self):
         """
         Test the logout all api endpoint configured fields ie route, name, endpoint
         """
         self.common_test_case_auth_app(test_name="logout_all", route='api/v1/auth/logoutall',
-                                       route_name=self.logout_all,
-                                       url_name="logout-all")
+                                       route_name=self.logout_all, url_name="logout-all",
+                                       view_class=knox_views.LogoutAllView)
 
     def test_retrieve_user_api_endpoint(self):
         """
         Test the register user api endpoint configured fields ie route, name, endpoint
         """
         self.common_test_case_auth_app(test_name="retrieve user", route='api/v1/auth/user',
-                                       route_name=self.register_user, url_name='retrieve-user')
+                                       route_name=self.register_user, url_name='retrieve-user',
+                                       view_class=AuthUserAPIView)
 
     def test_update_user_password_api_endpoint(self):
         """
         Test the update user password api endpoint configured fields ie route, name, endpoint, kwargs
         """
         self.common_test_case_auth_app(test_name="update user password", url_name='update-user-password',
-                                       route_name=self.update_user_password,
+                                       route_name=self.update_user_password, view_class=UserUpdatePasswordApiView,
                                        route="api/v1/auth/users/password/reset/<str:username>",
                                        kwargs={"username": "username"})
 
@@ -99,6 +103,6 @@ class AuthAppUrlsTestCase(TestCase):
         Test the delete user api endpoint configured fields ie route, name, endpoint, kwargs
         """
         self.common_test_case_auth_app(test_name="delete user", url_name='delete-user',
-                                       route_name=self.delete_user,
+                                       route_name=self.delete_user,view_class=UserDeleteApiView,
                                        route="api/v1/auth/users/delete/<str:username>",
                                        kwargs={"username": "username"})
