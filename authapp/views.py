@@ -3,20 +3,22 @@ from django.shortcuts import render
 from django.utils import timezone
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
-from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView, RetrieveUpdateAPIView, GenericAPIView, \
-    RetrieveDestroyAPIView, DestroyAPIView
+from rest_framework.generics import (
+    RetrieveAPIView, ListAPIView, UpdateAPIView, GenericAPIView,
+    DestroyAPIView, CreateAPIView
+)
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .permissions.permissions import IsMiniAdmin, IsMasterAdmin, IsUser
 from .serializers import (
     AuthUserSerializer, AuthRegisterSerializer, UserSerializer,
-    AuthUserResetPasswordSerializer, )
+    AuthUserResetPasswordSerializer, RatingModelSerializer)
 from django.contrib.auth import login, user_logged_in, update_session_auth_hash
 from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 from rest_framework import status
 from rest_framework.response import Response
-from .models import User
+from .models import User, Rating
 
 
 # Register API
@@ -54,7 +56,21 @@ class LoginAPI(KnoxLoginView):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+
+        if not user.active():
+            """
+            Deactivated users cannot log in
+            """
+            return Response(data={
+                "success": 'Fail',
+                "error": ['Deactivated'],
+                "status": status.HTTP_400_BAD_REQUEST,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # login a user
         login(request, user)
+
+        # generate token for the user
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
             now = timezone.now()
@@ -86,6 +102,9 @@ class AuthUserAPIView(RetrieveAPIView):
     http_method_names = ['get']
 
     def get_object(self):
+        """
+        A User should not be able to access their information if they are not active
+        """
         queryset = self.model.objects.get(username=self.request.user, is_active=True)
         return queryset
 
@@ -229,3 +248,53 @@ def robot(request):
     :return: render
     """
     return render(request, template_name='robots.txt', content_type='text/plain', status=Response.status_code)
+
+
+# Todo User to Admin/Mater Api view
+
+class MakeUserAdminAPIView(UpdateAPIView):
+    """
+    Make a user an admin
+    """
+    serializer_class = UserSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    http_method_names = ['put', 'patch']
+    model = User
+    lookup_field = 'username'
+    lookup_url_kwarg = 'username'
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True)
+
+
+class MakeAdminMasterAPIView(UpdateAPIView):
+    """
+    Make an admin a master admin
+    """
+    http_method_names = ['put', 'patch']
+    serializer_class = UserSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    model = User
+    lookup_field = 'username'
+    lookup_url_kwarg = 'username'
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True)
+
+
+class RatingCreateAPIView(CreateAPIView):
+    """
+    Allow user/clients to rate our services
+    """
+    model = Rating
+    serializer_class = RatingModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsUser, IsAuthenticated)
+    http_method_names = ['post']
+
+    def get_queryset(self):
+        self.model.objects.all()
+
+

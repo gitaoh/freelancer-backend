@@ -1,6 +1,7 @@
 from mixer.backend.django import mixer
 from django.test import TestCase
 from app.models import PaperType
+from authapp.models import User
 
 
 class PaperTypeModelTestcase(TestCase):
@@ -14,8 +15,9 @@ class PaperTypeModelTestcase(TestCase):
         Data to be used on every testcase
         """
         cls.default = 'paper 101'
+        cls.user = mixer.blend(User, username="joseph", user_type="MASTER")
         cls.model = PaperType
-        cls.model_data = mixer.blend(PaperType, name=cls.default)
+        cls.model_data = mixer.blend(PaperType, name=cls.default, admin=cls.user)
 
     def test_meta_class_for_the_model(self):
         """
@@ -54,29 +56,17 @@ class PaperTypeModelTestcase(TestCase):
         objects.first().delete()
         self.assertEqual(objects.count(), 0)
 
-    def test_multiple_data_creation(self):
-        """
-        we can create a retrieve multiple objects
-        """
-        papers = ['paper1', 'paper2', 'paper3']
-        mixer.cycle(count=3).blend(self.model, name=(paper for paper in papers))
-        objects = self.model.objects
-
-        # objects created
-        self.assertEqual(objects.count(), 4)
-
-        # delete
-        objects.get(name=papers[0]).delete()
-        self.assertEqual(objects.count(), 3)
-
-        self.assertEqual(objects.all().filter(name__startswith='paper').count(), 3)
-
     def test_number_of_fields_in_the_model(self):
         """
         Count of all the fields create by this model
         """
         fields = list(self.model._meta.get_fields())
-        self.assertEqual(len(fields), 7)
+        self.assertEqual(len(fields), 9)
+
+    def test_is_active_column(self):
+        active = self.model._meta.get_field(field_name='is_active')
+        self.assertTrue(active.default)
+        self.assertFalse(active.null)
 
     def test_name_column(self):
         """

@@ -1,4 +1,6 @@
-from .views import RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView
+from .views import (
+    RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView,
+    RatingCreateAPIView)
 from django.urls import path, include
 from knox import views as knox_views
 
@@ -21,4 +23,5 @@ urlpatterns = [
     path('users/delete/<str:username>', UserDeleteApiView.as_view(), name='delete-user'),
     # reset users password
     path('forgot/password/reset', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    path('rating/create', RatingCreateAPIView.as_view(), name="rating-create")
 ]

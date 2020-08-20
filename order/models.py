@@ -9,6 +9,7 @@ from django.conf import settings
 from django.utils.timezone import now
 
 
+# Todo rate writer
 class Writer(MinimalModel):
     """
     Virtual Writer's
@@ -18,9 +19,9 @@ class Writer(MinimalModel):
     username = models.CharField(_('username'), max_length=150, unique=True, validators=[username_validator],
                                 help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
                                 error_messages={'unique': _("A user with that username already exists.")})
-    first_name = models.CharField(_('first name'), max_length=30, blank=True, help_text=_("Writer first name."))
-    last_name = models.CharField(_('last name'), max_length=150, blank=True, help_text=_("Writer last name."))
-    email = models.EmailField(_('email address'), blank=False, unique=True, help_text=_("Writer email."))
+    first_name = models.CharField(_('first name'), max_length=30, help_text=_("Writer first name."))
+    last_name = models.CharField(_('last name'), max_length=150, help_text=_("Writer last name."))
+    email = models.EmailField(_('email address'), unique=True, help_text=_("Writer email."))
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Writer is active/deactivated'))
     level = models.CharField(choices=PreferencesChoices.choices, default=PreferencesChoices.STANDARD, max_length=8,
                              help_text=_("Experience level of the writer"))
@@ -33,6 +34,7 @@ class Writer(MinimalModel):
         Deactivate writers account
         """
         self.is_active = False
+        self.deletedAt = now()
         self.save()
 
     def activate(self):
@@ -54,7 +56,7 @@ class Files(MinimalModel):
     """
     # order = models.ForeignKey(to=Order, to_field='card', on_delete=models.SET_DEFAULT, default='deleted',
     #                           limit_choices_to={'is_paper': True}, help_text=_('Link to the order'))
-    description = models.CharField(max_length=200, blank=True, null=True,
+    description = models.CharField(max_length=200, null=True,
                                    help_text='Client description of what this files contains')
     file = models.FileField(help_text="Please add files if you have any.", upload_to='files')
     is_deleted = models.BooleanField(default=False, help_text=_('if file is deleted or not'))
@@ -65,15 +67,14 @@ class Files(MinimalModel):
     def deleted(self):
         """
         Orders are set to is_deleted=True to signify that they are deleted
-        :return:
         """
         self.is_deleted = True
+        self.deletedAt = now()
         self.save()
 
     def restore(self):
         """
         Orders are set to is_deleted=False to signify that they are not deleted
-        :return:
         """
         self.is_deleted = False
         self.save()
@@ -88,21 +89,16 @@ class Order(MinimalModel):
     """
     Model for orders
     """
-    # card = models.CharField(max_length=10, unique=True, blank=False, null=False, default='not card',
-    #                         help_text=_('Order unique number'))
-    writer = models.ForeignKey(verbose_name="writer", to=Writer, on_delete=models.SET_DEFAULT,
-                               limit_choices_to={'is_active': True, }, to_field='username', default=None, null=True,
+    writer = models.ForeignKey(verbose_name="writer", to=Writer, on_delete=models.PROTECT,
+                               limit_choices_to={'is_active': True, }, to_field='username', null=False,
                                help_text=_('Who is assigned to work on this order'))
-    user = models.ForeignKey(verbose_name="user", to=settings.AUTH_USER_MODEL, on_delete=models.SET_DEFAULT,
+    user = models.ForeignKey(verbose_name="user", to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                              limit_choices_to={'is_active': True, 'is_staff': False}, to_field='username', default=None,
-                             null=True, help_text=_('Client Placing the order'))
-    paper_type = models.CharField(_("paper_type"), max_length=200, null=False,
-                                  help_text=_('This order paper type'))
-    discipline = models.CharField(_("discipline"), max_length=200, null=False,
-                                  help_text=_('This orders discipline'))
-    academic = models.CharField(_("academic"), choices=EducationLevelChoices.choices,
-                                default=EducationLevelChoices.HIGHSCHOOL, max_length=17, null=False, blank=False,
-                                help_text=_('Clients academic level'))
+                             null=False, help_text=_('Client Placing the order'))
+    paper_type = models.CharField(_("paper_type"), max_length=200, null=False, help_text=_('This order paper type'))
+    discipline = models.CharField(_("discipline"), max_length=200, null=False, help_text=_('This orders discipline'))
+    academic = models.CharField(_("academic"), choices=EducationLevelChoices.choices, max_length=17, null=False,
+                                default=EducationLevelChoices.HIGHSCHOOL, help_text=_('Clients academic level'))
     format = models.CharField(choices=FormatChoices.choices, default=FormatChoices.MLA, null=False,
                               max_length=16, help_text=_('Format chosen by client for this order, eg. MLA, APA6...'))
     spacing = models.CharField(choices=SpacingChoices.choices, default=SpacingChoices.SINGLE, null=False, max_length=6,
@@ -147,7 +143,6 @@ class Order(MinimalModel):
         verbose_name_plural = _("Orders")
         db_table = "Order"
         order_with_respect_to = 'user'
-        # ordering = 'createdAt'
 
 
 class Notification(MinimalModel):
@@ -166,9 +161,15 @@ class Notification(MinimalModel):
     If Notification a Message 
     """
     read = models.BooleanField(default=False, help_text=_('If notifications is read or unread'))
+    is_notify = models.BooleanField(help_text="if a notification is deleted or active", default=True)
 
     def __str__(self):
         return f"{self.user}, {self.read}"
+
+    def hidden(self):
+        self.is_notify = False
+        self.deletedAt = now()
+        self.save()
 
     class Meta:
         verbose_name = _('Notification')

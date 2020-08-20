@@ -41,7 +41,7 @@ class NotificationsModelTestCase(TestCase):
         Allowed fields in the model
         """
         number = len(list(self.model._meta.get_fields()))
-        self.assertEqual(number, 10)
+        self.assertEqual(number, 11)
 
     def test_can_delete_successfully(self):
         """

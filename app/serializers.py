@@ -1,70 +1,63 @@
-import uuid as uu
-from django.contrib.auth import authenticate
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from rest_framework import serializers
-from .models import (
-    Discipline,
-    PaperType,
-)
-from rest_framework import exceptions
-
-excludeFields = ['first_name', 'last_name', 'groups', 'is_superuser', 'user_permissions', 'password', 'is_staff']
+from .models import (Discipline, PaperType)
+import uuid
 
 
-def send_email(user, status, header):
-    email = user.email
-    username = user.username
-    html_message = render_to_string('app/Email/custome2.html', {'user': username, 'header': header})
-    plain_message = strip_tags(html_message)
-    from_email = "no-reply@dpao.com"
-    send_mail(subject=status, message=plain_message, recipient_list=[email],
-              from_email=from_email, html_message=html_message)
+class UUIDGenerator:
+    def __init__(self, model):
+        self.model = model
 
-
-def set_url(view_name, look_field):
-    return serializers.HyperlinkedIdentityField(view_name=view_name, lookup_field=look_field)
-
-
-def uuid_func(kwargs):
-    if kwargs['context']['request'].method == "POST":
+    def generate_uuid(self):
+        generate = uuid.uuid4()
         try:
-            kwargs['data']['uuid']
-        except Exception as e:
-            kwargs['data']['uuid'] = uu.uuid4()
+            self.model.objects.get(uuid__exact=generate)
+        except self.model.DoesNotExist as e:
+            return generate
+        else:
+            self.generate_uuid()
 
 
-class PaperTypeSerializer(serializers.ModelSerializer):
-    uuid = serializers.UUIDField()
-
-    class Meta:
-        model = PaperType
-        fields = "__all__"
-
-    # def __init__(self, *args, **kwargs):
-    #     uuid_func(kwargs=kwargs)
-    #     super(PaperTypeSerializer, self).__init__(*args, **kwargs)
-
-
-class DisciplineSerializer(serializers.ModelSerializer):
-    uuid = serializers.UUIDField()
+class DisciplineSerializer(serializers.ModelSerializer, UUIDGenerator):
+    """
+    Serialize Discipline Model Objects to json format
+    """
+    model = Discipline
 
     class Meta:
         model = Discipline
-        fields = "__all__"
+        fields = ('name', 'description')
 
-    def __init__(self, *args, **kwargs):
-        uuid_func(kwargs=kwargs)
-        super(DisciplineSerializer, self).__init__(*args, **kwargs)
+    def create(self, validated_data):
+        return Discipline.objects.create(
+            name=validated_data['name'],
+            description=validated_data['description'],
+            admin=self.context['request'].user,
+            uuid=self.generate_uuid())
 
 
-class LoginUserSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
+class DisciplineGetSerializer(serializers.ModelSerializer):
+    """
+    Serialize Discipline Model Objects to json format
+    """
 
-    def validate(self, data):
-        user = authenticate(**data)
-        if user and user.is_active:
-            return user
-        raise exceptions.ValidationError("Unable to login with given credentials")
+    class Meta:
+        model = Discipline
+        fields = ("admin", 'name', 'description', 'createdAt', 'updatedAt')
+
+
+class PaperTypeSerializer(serializers.ModelSerializer, UUIDGenerator):
+    """
+    Serialize PaperType Model Objects to json format
+    """
+    model = PaperType
+
+    class Meta:
+        model = PaperType
+        fields = ("admin", 'name', 'description')
+
+    def create(self, validated_data):
+        return PaperType.objects.create(
+            name=validated_data['name'],
+            description=validated_data['description'],
+            admin=self.context['request'].user,
+            uuid=self.generate_uuid())

@@ -15,7 +15,7 @@ class AvatarModelTestcase(TestCase):
         """
         cls.default = mixer.blend(User, username="joseph")
         cls.model = Avatar
-        cls.model_data = mixer.blend(Avatar, user=cls.default)
+        cls.model_data = mixer.blend(Avatar, user=cls.default, is_avatar=True, deletedAt=None)
 
     def test_meta_class_in_the_model(self):
         """
@@ -33,7 +33,7 @@ class AvatarModelTestcase(TestCase):
         Test the configured columns in the model
         """
         fields = list(self.model._meta.get_fields())
-        self.assertEqual(len(fields), 7)
+        self.assertEqual(len(fields), 8)
 
     def test_user_object_model_was_created(self):
         """
@@ -62,7 +62,6 @@ class AvatarModelTestcase(TestCase):
     def test_user_column_is_a_user_instance(self):
         """
         user column is a User Model instance
-        :return:
         """
         user = isinstance(self.model_data.user, User)
         self.assertTrue(user)
@@ -80,3 +79,15 @@ class AvatarModelTestcase(TestCase):
         """
         avatar = self.model._meta.get_field(field_name='avatar')
         self.assertTrue(avatar)
+
+    def test_hidden_method(self):
+        """
+        Hides the avatar from user when they delete it
+        """
+        objects = self.model.objects.first()
+        self.assertIsNone(objects.deletedAt)
+        self.assertTrue(objects.is_avatar)
+        objects.hidden()
+        self.assertFalse(objects.is_avatar)
+        self.assertIsNotNone(objects.deletedAt)
+        self.assertEqual(self.model.objects.all().filter(is_avatar=True).count(), 0)
