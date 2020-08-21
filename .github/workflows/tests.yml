@@ -43,7 +43,7 @@ jobs:
       - name: Run Tests
         run: |
           pytest
-      - name: Covergae
+
   PEP8:
     needs: [ test ]
     name: Quality checker
