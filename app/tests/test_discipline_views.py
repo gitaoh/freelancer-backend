@@ -36,8 +36,7 @@ class DisciplineViewsAPIView(APITestCase):
         """
         Authorize the created user on the test_server
         """
-        print(self.token[0], sep=' ')
-        # self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.token_key)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token[1])
 
     def test_that_authenticated_master_admin_can_access_the_api(self):
         """
@@ -45,3 +44,6 @@ class DisciplineViewsAPIView(APITestCase):
         """
         response = self.client.get(resolve(self.admin_disciplines).route)
         print(response)
+        # self.assertEqual(response.status_code, 404)
+        # self.assertEqual(response.content_type, "text/html")
+
