@@ -1,0 +1,11 @@
+POST http://127.0.0.1:8000/api/v1/auth/register
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{
+  "username": "qwartypa",
+  "email": "qwartypa@gmail.com",
+  "password": "50391798"
+}
+

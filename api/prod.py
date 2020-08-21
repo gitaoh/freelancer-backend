@@ -16,7 +16,7 @@ from rest_framework.settings import api_settings
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
@@ -34,12 +34,12 @@ ADMINS = [(os.environ.get('ADMIN_ONE'), os.environ.get('ADMIN_ONE_EMAIL')),
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DATABASE_DB'),
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'HOST': os.environ.get('DATABASE_HOST'),
-        'USER': os.environ.get('DATABASE_USER'),
-        'PORT': os.environ.get('DATABASE_PORT'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'ENGINE': str(os.environ.get('DATABASE_DB')),
+        'NAME': str(os.environ.get('DATABASE_NAME')),
+        'HOST': str(os.environ.get('DATABASE_HOST')),
+        'USER': str(os.environ.get('DATABASE_USER')),
+        'PORT': str(os.environ.get('DATABASE_PORT')),
+        'PASSWORD': str(os.environ.get('DATABASE_PASSWORD')),
     }
 }
 

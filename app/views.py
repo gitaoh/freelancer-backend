@@ -1,12 +1,9 @@
-from django.http import QueryDict
 from knox.auth import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from authapp.permissions.permissions import IsMasterAdmin, IsUser
+from authapp.permissions.permissions import IsMasterAdmin
 from .serializers import DisciplineSerializer, PaperTypeSerializer, DisciplineGetSerializer
 from .models import Discipline, PaperType
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, ListAPIView
-from rest_framework import status
 
 
 # Create discipline
