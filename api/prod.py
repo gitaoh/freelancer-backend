@@ -22,7 +22,7 @@ DEBUG = True
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
-ALLOWED_HOSTS = [os.environ.get('BackendAppUrl')]
+ALLOWED_HOSTS = [str(os.environ.get('BackendAppUrl'))]
 
 CORS_ORIGIN_WHITELIST = (os.environ.get('FrontEndUrl'),)
 
