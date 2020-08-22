@@ -1,6 +1,7 @@
 from .views import (
-    RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView,
-    RatingCreateAPIView)
+    RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView, AvatarCreateAPIView,
+    RatingCreateAPIView, MakeAdminMasterAPIView, MakeUserAdminAPIView, CreateDefaultAPIView, UpdateDefaultsAPIView,
+    RetrieveDefaultsAPIView, UpdateAvatarAPIView, RetrieveAvatarAPIView)
 from django.urls import path, include
 from knox import views as knox_views
 
@@ -23,5 +24,22 @@ urlpatterns = [
     path('users/delete/<str:username>', UserDeleteApiView.as_view(), name='delete-user'),
     # reset users password
     path('forgot/password/reset', include('django_rest_passwordreset.urls', namespace='password_reset')),
-    path('rating/create', RatingCreateAPIView.as_view(), name="rating-create")
+    path('rating/create', RatingCreateAPIView.as_view(), name="rating-create"),
+    # user_type change
+    path('make/', include([
+        path('admin/<uuid:uuid>', MakeUserAdminAPIView.as_view(), name="make-user-admin"),
+        path('master/admin/<uuid:uuid>', MakeAdminMasterAPIView.as_view(), name="make-user-master-admin")
+    ])),
+    # user defaults
+    path('defaults/', include([
+        path('create', CreateDefaultAPIView.as_view(), name="defaults-create"),
+        path('update/<uuid:uuid>', UpdateDefaultsAPIView.as_view(), name="defaults-update"),
+        path('retrieve/<uuid:uuid>', RetrieveDefaultsAPIView.as_view(), name="defaults-retrieve"),
+    ])),
+    # user avatar
+    path('avatar/', include([
+        path('create', AvatarCreateAPIView.as_view(), name='avatar-create'),
+        path('update/<uuid:uuid>', UpdateAvatarAPIView.as_view(), name="avatar-update"),
+        path('retrieve/<uuid:uuid>', RetrieveAvatarAPIView.as_view(), name="avatar-retrieve"),
+    ]))
 ]

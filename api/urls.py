@@ -22,5 +22,5 @@ urlpatterns = [
     path("api/v1/auth/", include('authapp.urls')),
     path("api/v1/admin/", include('app.urls')),
     path("api/v1/orders/", include('order.urls')),
-    path('robots.txt', robot)
+    path('robots.txt', robot, name="robot")
 ]

@@ -23,6 +23,20 @@ SECRET_KEY = 'C2LUQecD4QKoDz-0XtbRJ1m5n_uPmE7OGWurK4BLA4Q'
 
 CORS_ORIGIN_WHITELIST = ("http://127.0.0.1:3000",)
 
+# Database
+# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'freelancer',
+        'HOST': '127.0.0.1',
+        'USER': 'postgres',
+        'PORT': '5432',
+        'PASSWORD': '50391798',
+    }
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DEFAULT_FROM_EMAIL = 'example@gmail.com'
@@ -40,5 +54,3 @@ REST_KNOX = {
     'AUTO_REFRESH': True,
     'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
 }
-
-

@@ -63,9 +63,7 @@ class User(AbstractUser, MinimalModel):
         return self.username
 
     def deactivate(self):
-        """
-        Deactivate/Mark Deleted
-        """
+        """ Deactivate/Mark Deleted """
         self.is_active = False
         self.deletedAt = now()
         self.is_staff = False
@@ -75,15 +73,11 @@ class User(AbstractUser, MinimalModel):
 
     @property
     def active(self):
-        """
-        Check is a user has a state of is_active
-        """
-        return bool(self.is_active)
+        """ Check is a user has a state of is_active """
+        return self.is_active
 
     def make_admin(self):
-        """
-        Convert a User/Mater To Admin
-        """
+        """ Convert a User/Mater To Admin """
         self.user_type = AdminCategory.ADMIN
         self.is_staff = True
         self.is_superuser = True
@@ -91,9 +85,7 @@ class User(AbstractUser, MinimalModel):
         return
 
     def make_master(self):
-        """
-        Convert a User/Admin To master Admin
-        """
+        """ Convert a User/Admin To master Admin """
         self.user_type = AdminCategory.MASTER
         self.is_staff = True
         self.is_superuser = True
@@ -101,9 +93,7 @@ class User(AbstractUser, MinimalModel):
         return
 
     def make_user(self):
-        """
-        Convert a Master/Admin To a user
-        """
+        """ Convert a Master/Admin To a user """
         self.user_type = AdminCategory.USER
         self.is_staff = False
         self.is_superuser = False
@@ -120,15 +110,13 @@ class Avatar(MinimalModel):
     user = models.ForeignKey(to=User, on_delete=models.PROTECT, null=False)
     # Todo: The default avatar should be handled on the frontend if the user does not upload their own.
     avatar = models.FileField(upload_to="Avatar/")
-    is_avatar = models.BooleanField(help_text="If an avatar is deleted", default=False)
+    is_avatar = models.BooleanField(help_text="If an avatar is deleted", default=True)
 
     def __str__(self):
         return self.user.username
 
     def hidden(self):
-        """
-        Set avatar to hidden state
-        """
+        """ Set avatar to hidden state """
         self.is_avatar = False
         self.deletedAt = now()
         self.save()
@@ -140,16 +128,14 @@ class Avatar(MinimalModel):
 
 
 class Defaults(MinimalModel):
-    """
-    Defaults that a User can place
-    """
+    """ Defaults that a User can place """
     user = models.ForeignKey(to=User, on_delete=models.SET_DEFAULT, null=True, default=None,
                              limit_choices_to={'is_active': True, 'is_staff': False}, to_field='username')
     writer = models.ForeignKey(to_field='username', to=Writer, on_delete=models.SET_DEFAULT, default=None,
                                limit_choices_to={'is_active': True}, null=True)
     academic = models.CharField(choices=EducationLevelChoices.choices, default=None, null=True,
                                 max_length=17, help_text=_('Client default academic level'))
-    native = models.BooleanField(help_text=_('Client Only wants native English writers to work on their order'))
+    native = models.BooleanField(help_text=_('Client Only wants native English writers to work on their order'), default=False)
     topic = models.CharField(max_length=200, null=True,
                              help_text=_("Topic a would like to always requests their paper to be done"))
     paper = models.CharField(max_length=200, null=True,
@@ -167,9 +153,7 @@ class Defaults(MinimalModel):
 
 
 class Rating(MinimalModel):
-    """
-    Custom rating from the user when they delete their account
-    """
+    """ Custom rating from the user when they delete their account """
     # Not more tha 10 in count
     rate = models.PositiveIntegerField(validators=[
         MaxValueValidator(limit_value=10, message='Rating cannot be more than ten.')

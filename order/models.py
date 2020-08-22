@@ -1,15 +1,15 @@
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from app.abstract import MinimalModel
 from django.db import models
-from .choices import NotificationChoices, PreferencesChoices, SpacingChoices, FormatChoices, StatusChoices, \
-    EducationLevelChoices
+from .choices import (
+    NotificationChoices, PreferencesChoices, SpacingChoices, FormatChoices, StatusChoices,
+    EducationLevelChoices)
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.utils.timezone import now
 
 
-# Todo rate writer
 class Writer(MinimalModel):
     """
     Virtual Writer's
@@ -54,8 +54,6 @@ class Files(MinimalModel):
     """
     File uploaded to an order
     """
-    # order = models.ForeignKey(to=Order, to_field='card', on_delete=models.SET_DEFAULT, default='deleted',
-    #                           limit_choices_to={'is_paper': True}, help_text=_('Link to the order'))
     description = models.CharField(max_length=200, null=True,
                                    help_text='Client description of what this files contains')
     file = models.FileField(help_text="Please add files if you have any.", upload_to='files')
@@ -89,11 +87,12 @@ class Order(MinimalModel):
     """
     Model for orders
     """
+    card = models.CharField(null=False, help_text='Order_id_card', max_length=10)
     writer = models.ForeignKey(verbose_name="writer", to=Writer, on_delete=models.PROTECT,
-                               limit_choices_to={'is_active': True, }, to_field='username', null=False,
+                               limit_choices_to={'is_active': True, }, to_field='username', null=True, default=None,
                                help_text=_('Who is assigned to work on this order'))
     user = models.ForeignKey(verbose_name="user", to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                             limit_choices_to={'is_active': True, 'is_staff': False}, to_field='username', default=None,
+                             limit_choices_to={'is_active': True, 'is_staff': False}, to_field='username',
                              null=False, help_text=_('Client Placing the order'))
     paper_type = models.CharField(_("paper_type"), max_length=200, null=False, help_text=_('This order paper type'))
     discipline = models.CharField(_("discipline"), max_length=200, null=False, help_text=_('This orders discipline'))
@@ -110,12 +109,14 @@ class Order(MinimalModel):
                                              help_text=_('Number of powerpoints requested in the current order'))
     status = models.CharField(choices=StatusChoices.choices, default=StatusChoices.ACTIVE, max_length=10,
                               help_text=_('Where an order belongs to ether active, deleted, or ..'))
-
     payments_url = models.URLField(_('payment_url'), null=True, unique=True,
                                    help_text=_('A payment url to verify user paid the order'))
+
     title = models.CharField(_("title"), max_length=200, null=False, help_text=_('This orders title'))
     instructions = models.TextField(help_text=_('This paper instructions'))
+
     additional_materials = models.ManyToManyField(Files, limit_choices_to={'is_deleted': False})
+
     deadline = models.DateTimeField(default=timezone.now, help_text=_('The deadline of this order'))
     pages = models.PositiveIntegerField(default=0, help_text=_('Number of pages requested in the current order'))
     sources = models.PositiveIntegerField(default=0, help_text=_('Number of sources requested in the current order'))
@@ -125,6 +126,8 @@ class Order(MinimalModel):
     cost = models.PositiveIntegerField(default=0, help_text=_('The cost of a paper'))
     smart = models.BooleanField(_('is_smart'), default=False, help_text=_('Whether an order is  a smart paper.'))
     paid = models.BooleanField(_('paid'), default=False, help_text=_('Whether an order is paid or not.'))
+    rate = models.PositiveIntegerField(null=True, default=0,
+                                       help_text=_('Rating of how a paper was done by this writer'))
     confirmed = models.BooleanField(_('confirmed'), default=False, help_text=_('Whether an order is confirmed.'))
     dispute = models.BooleanField(_('dispute'), default=False, help_text=_('Whether an order is or was a dispute.'))
     revision = models.BooleanField(_('revision'), default=False, help_text=_('Whether an order is or was a revision.'))
@@ -134,9 +137,20 @@ class Order(MinimalModel):
         return f"{self.discipline}, {self.paper_type}"
 
     def trash(self):
+        """ Delete/trash an order """
         self.is_paper = False
         self.deletedAt = now()
         self.save()
+
+    def un_cancel(self):
+        """ Allow users to un_cancel an order they had canceled """
+        self.is_paper = True
+        self.status = 'DRAFT'
+        self.save()
+
+    def files(self):
+        """ Order additional materials """
+        return self.additional_materials
 
     class Meta:
         verbose_name = _('Order')

@@ -13,7 +13,7 @@ class DisciplineCreateAPIView(CreateAPIView):
     """
     serializer_class = DisciplineSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     http_method_names = ['post']
     model = Discipline
 
@@ -29,7 +29,7 @@ class RetrieveDisciplineAPIView(RetrieveAPIView):
     http_method_names = ['get']
     serializer_class = DisciplineSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     model = Discipline
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
@@ -43,7 +43,7 @@ class RetrievePaperTypeAPIView(RetrieveAPIView):
     """
     Get information of a single paper type
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     http_method_names = ['get']
     serializer_class = DisciplineGetSerializer
     authentication_classes = (TokenAuthentication,)
@@ -62,7 +62,7 @@ class RetrieveSpecificDisciplineAPIView(ListAPIView):
     http_method_names = ['get']
     serializer_class = DisciplineSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     model = Discipline
 
     def get_queryset(self):
@@ -76,7 +76,7 @@ class RetrieveAllActiveDisciplineAPIView(ListAPIView):
     http_method_names = ['get']
     serializer_class = DisciplineGetSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     model = Discipline
 
     def get_queryset(self):
@@ -90,7 +90,7 @@ class RetrieveDeletedDisciplineAPIView(ListAPIView):
     http_method_names = ['get']
     serializer_class = DisciplineGetSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     model = Discipline
 
     def get_queryset(self):
@@ -99,12 +99,12 @@ class RetrieveDeletedDisciplineAPIView(ListAPIView):
 
 class RetrieveTotalAllDisciplineAPIView(ListAPIView):
     """
-    Get information of a all deleted or active discipline
+    Get information of all deleted or active discipline
     """
     http_method_names = ['get']
     serializer_class = DisciplineGetSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     model = Discipline
 
     def get_queryset(self):
@@ -116,7 +116,7 @@ class UpdateDisciplineAPIView(UpdateAPIView):
     """
     Update information of a single discipline
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     serializer_class = DisciplineSerializer
     authentication_classes = (TokenAuthentication,)
     model = Discipline
@@ -138,7 +138,7 @@ class DeleteDisciplineAPIView(DestroyAPIView):
     lookup_url_kwarg = 'uuid'
     model = Discipline
     serializer_class = DisciplineSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
     authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
@@ -257,4 +257,3 @@ class DeletePaperTypeAPIView(DestroyAPIView):
 
     def perform_destroy(self, instance):
         instance.trash()
-

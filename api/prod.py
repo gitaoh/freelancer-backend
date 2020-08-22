@@ -32,16 +32,17 @@ ADMINS = [(os.environ.get('ADMIN_ONE'), os.environ.get('ADMIN_ONE_EMAIL')),
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': str(os.environ.get('DATABASE_DB')),
-#         'NAME': str(os.environ.get('DATABASE_NAME')),
-#         'HOST': str(os.environ.get('DATABASE_HOST')),
-#         'USER': str(os.environ.get('DATABASE_USER')),
-#         'PORT': str(os.environ.get('DATABASE_PORT')),
-#         'PASSWORD': str(os.environ.get('DATABASE_PASSWORD')),
-#     }
-# }
+# Todo connect to mongodb cloud
+DATABASES = {
+    'default': {
+        'ENGINE': str(os.environ.get('DATABASE_DB')),
+        'NAME': str(os.environ.get('DATABASE_NAME')),
+        'HOST': str(os.environ.get('DATABASE_HOST')),
+        'USER': str(os.environ.get('DATABASE_USER')),
+        'PORT': str(os.environ.get('DATABASE_PORT')),
+        'PASSWORD': str(os.environ.get('DATABASE_PASSWORD')),
+    }
+}
 
 LOGGING = {
     "version": 1,

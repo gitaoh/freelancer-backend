@@ -1,20 +1,6 @@
 from rest_framework import serializers
 from .models import (Discipline, PaperType)
-import uuid
-
-
-class UUIDGenerator:
-    def __init__(self, model):
-        self.model = model
-
-    def generate_uuid(self):
-        generate = uuid.uuid4()
-        try:
-            self.model.objects.get(uuid__exact=generate)
-        except self.model.DoesNotExist as e:
-            return generate
-        else:
-            self.generate_uuid()
+from recycle.uuid_generator import UUIDGenerator
 
 
 class DisciplineSerializer(serializers.ModelSerializer, UUIDGenerator):

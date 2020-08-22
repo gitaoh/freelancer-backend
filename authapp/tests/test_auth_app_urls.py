@@ -117,12 +117,12 @@ class AuthAppUrlsTestCase(TestCase):
         if kwargs is None:
             kwargs = {}
         self.assertEqual(response.args, args)
-        self.assertEqual(response.app_name, app_name)
-        self.assertIn(app_name, response.app_names)
         self.assertEqual(len(response.app_names), 1)
         self.assertEqual(response.namespace, app_name)
         self.assertIn(response.namespace, response.namespaces)
         self.assertEqual(response.route, url)
+        self.assertEqual(response.app_name, app_name)
+        self.assertIn(app_name, response.app_names)
         self.assertEqual(response.func.view_class, func)
         self.assertEqual(response.url_name, url_name)
         self.assertEqual(response.kwargs, kwargs)

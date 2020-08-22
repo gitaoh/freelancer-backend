@@ -54,7 +54,6 @@ class GetOrdersApiView(ListAPIView):
 
 class OrderUpdateApiView(UpdateAPIView):
     """
-    Retrieve: get the information of a single order
     PUT: update order information
     PATCH: partial update to order information
     """
@@ -67,12 +66,11 @@ class OrderUpdateApiView(UpdateAPIView):
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
-        return self.model.objects.all().filter(user=self.request.user.id, is_paper=True)
+        return self.model.objects.all().filter(user=self.request.user, is_paper=True)
 
 
 class OrderDeleteApiView(DestroyAPIView):
     """
-    Retrieve: get the information of a single order
     Delete: delete an order
     """
     model = Order
@@ -84,7 +82,7 @@ class OrderDeleteApiView(DestroyAPIView):
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
-        return self.model.objects.all().filter(user=self.request.user.id, is_paper=True)
+        return self.model.objects.all().filter(user=self.request.user, is_paper=True)
 
 
 class SingleTOAdminsOrderApiView(RetrieveAPIView):
@@ -100,6 +98,9 @@ class SingleTOAdminsOrderApiView(RetrieveAPIView):
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
+        """
+        Absolutely all orders
+        """
         queryset = self.model.objects.all()
         return queryset
 
@@ -117,29 +118,30 @@ class SingleUsersSpecificOrdersApiView(RetrieveAPIView):
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
-        return self.model.objects.all().filter(user=self.request.user.id, is_paper=True)
+        """
+        User to view details of an order they have not deleted
+        """
+        return self.model.objects.all().filter(user=self.request.user, is_paper=True)
 
 
 # OrderFiles
-class OrderFilesApiView(ListCreateAPIView):
+class OrderFilesApiView(CreateAPIView):
     """
-    GET: List all files for the orders by the user
     POST: create a new file
     """
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsUser | IsMiniAdmin | IsMasterAdmin)
     serializer_class = OrderFilesSerializer
     model = Files
-    http_method_names = ['get', 'post']
+    http_method_names = ['post']
 
     def get_queryset(self):
         queryset = self.model.objects.all()
         return queryset
 
 
-class OrderFilesDeleteApiView(RetrieveDestroyAPIView):
+class OrderFilesDeleteApiView(DestroyAPIView):
     """
-    GET: List all files for the orders by the user
     DELETE: Delete order file
     """
     authentication_classes = (TokenAuthentication,)
@@ -152,3 +154,23 @@ class OrderFilesDeleteApiView(RetrieveDestroyAPIView):
     def get_queryset(self):
         queryset = self.model.objects.all()
         return queryset
+
+
+"""
+
+[ ] Create order
+[ ] Update order detail and files
+[ ] Approve order
+[ ] User specific order
+[ ] Single User specific order
+[ ] Delete an order
+[ ] List of all order - admin
+[ ] single order to admin - admin
+
+"""
+
+"""
+
+[ ] Canceled order should have a status='CANCELED' and should not be rendered
+
+"""
