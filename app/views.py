@@ -1,8 +1,10 @@
 from knox.auth import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from authapp.permissions.permissions import IsMasterAdmin
-from .serializers import DisciplineSerializer, PaperTypeSerializer, DisciplineGetSerializer
-from .models import Discipline, PaperType
+from authapp.permissions.permissions import IsMasterAdmin, IsUser
+from .serializers import (
+    DisciplineSerializer, PaperTypeSerializer, DisciplineGetSerializer, AlertModelSerialize,
+    AlertModelSerializer, AlertModelDeletedSerialize)
+from .models import Discipline, PaperType, Alert
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, ListAPIView
 
 
@@ -256,4 +258,100 @@ class DeletePaperTypeAPIView(DestroyAPIView):
         return self.model.objects.all().filter(is_active=True)
 
     def perform_destroy(self, instance):
+        instance.trash()
+
+
+class AlertCreateAPIView(CreateAPIView):
+    """
+    Allow master admin to create an alert to inform users/clients of any updates on the platform
+    """
+    authentication_classes = (TokenAuthentication,)
+    model = Alert
+    http_method_names = ['post']
+    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    serializer_class = AlertModelSerializer
+
+    def get_queryset(self):
+        return self.model.objects.all()
+
+
+class UpdateAlertAPIView(UpdateAPIView):
+    """
+    Update information of an alert
+    """
+    authentication_classes = (TokenAuthentication,)
+    model = Alert
+    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    serializer_class = AlertModelSerializer
+    http_method_names = ['put', 'patch']
+    lookup_field = 'uuid'
+    lookup_url_kwarg = 'uuid'
+
+    def get_queryset(self):
+        return self.model.objects.all()
+
+
+class RetrieveSingleAlertAPIView(RetrieveAPIView):
+    """
+    Access information on a single alert
+    """
+    lookup_url_kwarg = 'uuid'
+    lookup_field = 'uuid'
+    http_method_names = ['get']
+    serializer_class = AlertModelDeletedSerialize
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    model = Alert
+
+    def get_queryset(self):
+        return self.model.objects.all()
+
+
+class RetrieveAlertAPIView(ListAPIView):
+    """
+    Retrieve a list of active alerts
+    """
+    http_method_names = ['get']
+    authentication_classes = (TokenAuthentication,)
+    model = Alert
+    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    serializer_class = AlertModelSerialize
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True)
+
+
+class RetrieveInActiveAlertAPIView(ListAPIView):
+    """
+    Retrieve a list of active alerts
+    """
+    http_method_names = ['get']
+    authentication_classes = (TokenAuthentication,)
+    model = Alert
+    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    serializer_class = AlertModelDeletedSerialize
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=False, deleted_by__isnull=False, deletedAt__isnull=False)
+
+
+class DeleteAlertAPIView(DestroyAPIView):
+    """
+    Delete an alert
+    """
+    serializer_class = AlertModelSerializer
+    http_method_names = ['delete']
+    authentication_classes = (TokenAuthentication,)
+    model = Alert
+    lookup_field = 'uuid'
+    lookup_url_kwarg = 'uuid'
+    permission_classes = (IsMasterAdmin, IsAuthenticated)
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True)
+
+    def perform_destroy(self, instance):
+        """ Trash the alert """
+        instance.deleted_by = self.request.user
+        instance.save()
         instance.trash()

@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from recycle.uuid_generator import UUIDGenerator
-from order.models import Order, Files, Notification
+from order.models import Order, Files, Notification, Cancel
 import random
+from uuid import UUID
 
 
 def order_id_generator():
@@ -30,7 +31,7 @@ class OrderSerializer(serializers.ModelSerializer, UUIDGenerator):
     class Meta:
         model = Order
         exclude = ['writer', 'deletedAt', 'payments_url', 'confirmed', 'revision', 'dispute', 'paid', 'uuid', 'user',
-                   'card', 'additional_materials']
+                   'card', 'additional_materials', 'deleted_by']
 
     """
     # Writer = is being set
@@ -98,3 +99,20 @@ class SetOrderWriterSerializer(serializers.Serializer):
 
     order = serializers.UUIDField(required=True, allow_null=False)
     writer = serializers.UUIDField(required=True, allow_null=False)
+
+
+class CancelModeSerializer(serializers.ModelSerializer, UUIDGenerator):
+    model = Cancel
+
+    class Meta:
+        model = Cancel
+        exclude = ['uuid', 'deletedAt', 'user', 'is_active']
+
+    # Todo order_id will be for the order being canceled
+    def create(self, validated_data):
+        return self.model.objects.create(
+            reason=validated_data['reason'],
+            order=Order.objects.all().get(uuid__exact=UUID(str(validated_data['order']))),
+            uuid=self.get_fields(),
+            user=self.context['request'].user
+        )

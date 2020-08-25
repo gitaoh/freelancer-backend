@@ -29,7 +29,7 @@ CORS_ORIGIN_WHITELIST = ("http://127.0.0.1:3000",)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'freelancer',
+        'NAME': 'api',
         'HOST': '127.0.0.1',
         'USER': 'postgres',
         'PORT': '5432',

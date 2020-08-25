@@ -124,7 +124,7 @@ class AuthUserAPIView(RetrieveAPIView):
 
 
 class UserApiView(ListAPIView):
-    """Get all users of type user"""
+    """ Get all users of type user """
     serializer_class = UserSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminUser | IsMiniAdmin | IsMasterAdmin, IsAuthenticated)
@@ -225,8 +225,6 @@ def robot(request):
     """
     return render(request, template_name='robots.txt', content_type='text/plain', status=Response.status_code)
 
-
-# Todo User to Admin/Mater Api view
 
 class MakeUserAdminAPIView(UpdateAPIView):
     """ Make a user an admin """
@@ -329,11 +327,17 @@ class RetrieveDefaultsAPIView(RetrieveAPIView):
         return self.model.objects.all().filter(user__is_active=True)
 
 
+"""
+AVATAR Model
+User can DELETE, CREATE and RETRIEVE 
+"""
+
+
 class AvatarCreateAPIView(CreateAPIView):
     """ Upload an avatar to the server """
     http_method_names = ['post']
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    permission_classes = (IsMasterAdmin | IsMiniAdmin | IsUser, IsAuthenticated)
     serializer_class = AvatarModelSerializer
     model = Avatar
 
@@ -341,10 +345,10 @@ class AvatarCreateAPIView(CreateAPIView):
         return self.model.objects.all()
 
 
-class UpdateAvatarAPIView(UpdateAPIView):
-    """ Allow user to retrieve their avatar link """
-    http_method_names = ['put', 'patch']
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+class DeleteAvatarModelAPIView(DestroyAPIView):
+    """ Allow user to delete their avatar """
+    http_method_names = ['delete']
+    permission_classes = (IsMasterAdmin | IsMiniAdmin | IsUser, IsAuthenticated)
     authentication_classes = (TokenAuthentication,)
     serializer_class = AvatarModelSerializer
     model = Avatar
@@ -352,18 +356,35 @@ class UpdateAvatarAPIView(UpdateAPIView):
     lookup_field = 'uuid'
 
     def get_queryset(self):
-        return self.model.objects.all()
+        return self.model.objects.all().filter(is_avatar=True)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({
+            'status': "Success",
+            "message": "User successfully deleted.",
+            'code': Response.status_code,
+            "headers": {
+                "Status": Response.status_code
+            },
+            "error_messages": []
+        }, status=status.HTTP_204_NO_CONTENT, headers={"Status": Response.status_code})
+
+    def perform_destroy(self, instance):
+        instance.hidden()
 
 
-class RetrieveAvatarAPIView(RetrieveAPIView):
+class RetrieveAvatarAPIView(ListAPIView):
     """ Allow user to retrieve their avatar link """
     http_method_names = ['get']
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsMasterAdmin | IsMiniAdmin | IsUser, IsAuthenticated)
     authentication_classes = (TokenAuthentication,)
     serializer_class = RetrieveAvatarModelSerializer
     model = Avatar
-    lookup_url_kwarg = 'uuid'
-    lookup_field = 'uuid'
 
     def get_queryset(self):
-        return self.model.objects.all()
+        return self.model.objects.all().filter(user__is_active=True, user=self.request.user, is_avatar=True)
+
+    def get_object(self):
+        return self.model.objects.all().filter(user__is_active=True, user=self.request.user, is_avatar=True)

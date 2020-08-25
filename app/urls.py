@@ -5,7 +5,8 @@ from .views import (
     UpdateDisciplineAPIView, PaperTypeCreateAPIView, DeletePaperTypeAPIView, UpdatePaperTypeAPIView,
     RetrievePaperTypeAPIView, RetrieveAllActiveDisciplineAPIView, RetrieveDeletedDisciplineAPIView,
     RetrieveTotalAllDisciplineAPIView, RetrieveSpecificDisciplineAPIView, RetrieveSpecificPaperTypeAPIView,
-    RetrieveTotalAllPaperTypeAPIView, RetrieveAllPaperTypeAPIView, RetrieveDeletedPaperTypeAPIView
+    RetrieveTotalAllPaperTypeAPIView, RetrieveAllPaperTypeAPIView, RetrieveDeletedPaperTypeAPIView, AlertCreateAPIView,
+    RetrieveAlertAPIView, RetrieveInActiveAlertAPIView, DeleteAlertAPIView, UpdateAlertAPIView, RetrieveSingleAlertAPIView
 )
 
 app_name = "app"
@@ -48,4 +49,14 @@ urlpatterns = [
         path('update/<uuid:uuid>', UpdatePaperTypeAPIView.as_view(), name="paper-type-update"),
         path('delete/<uuid:uuid>', DeletePaperTypeAPIView.as_view(), name="paper-type-delete"),
     ])),
+    path("alert/", include([
+        path('create', AlertCreateAPIView.as_view(), name="alert-create"),
+        path('retrieve/', include([
+            path('deleted', RetrieveInActiveAlertAPIView.as_view(), name="alert-retrieve-deleted"),
+            path('active', RetrieveAlertAPIView.as_view(), name="alert-retrieve-active"),
+            path('single/<uuid:uuid>', RetrieveSingleAlertAPIView.as_view(), name="alert-retrieve-single")
+        ])),
+        path('update/<uuid:uuid>', UpdateAlertAPIView.as_view(), name="alert-update"),
+        path('delete/<uuid:uuid>', DeleteAlertAPIView.as_view(), name="alert-delete")
+    ]))
 ]

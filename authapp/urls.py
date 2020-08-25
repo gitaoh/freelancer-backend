@@ -1,7 +1,7 @@
 from .views import (
     RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView, AvatarCreateAPIView,
     RatingCreateAPIView, MakeAdminMasterAPIView, MakeUserAdminAPIView, CreateDefaultAPIView, UpdateDefaultsAPIView,
-    RetrieveDefaultsAPIView, UpdateAvatarAPIView, RetrieveAvatarAPIView)
+    RetrieveDefaultsAPIView, DeleteAvatarModelAPIView, RetrieveAvatarAPIView)
 from django.urls import path, include
 from knox import views as knox_views
 
@@ -39,7 +39,7 @@ urlpatterns = [
     # user avatar
     path('avatar/', include([
         path('create', AvatarCreateAPIView.as_view(), name='avatar-create'),
-        path('update/<uuid:uuid>', UpdateAvatarAPIView.as_view(), name="avatar-update"),
-        path('retrieve/<uuid:uuid>', RetrieveAvatarAPIView.as_view(), name="avatar-retrieve"),
+        path('delete/<uuid:uuid>', DeleteAvatarModelAPIView.as_view(), name="avatar-update"),
+        path('retrieve', RetrieveAvatarAPIView.as_view(), name="avatar-retrieve"),
     ]))
 ]

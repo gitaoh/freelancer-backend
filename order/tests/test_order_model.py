@@ -33,7 +33,7 @@ class OrderModelTestCase(TestCase):
         Allow fields in the model
         """
         fields = len(list(self.model._meta.get_fields()))
-        self.assertEqual(fields, 33)
+        self.assertEqual(fields, 36)
 
     def test_is_subclass_(self):
         """
@@ -202,9 +202,29 @@ class OrderModelTestCase(TestCase):
     def test_writer_column_(self):
         writer = self.model._meta.get_field(field_name='writer')
         # self.assertIsNone(writer.default)
-        self.assertFalse(writer.null)
+        self.assertTrue(writer.null)
         self.assertIsNotNone(writer.help_text)
         self.assertEqual(self.model.objects.first().writer.username, Writer.objects.first().username)
 
     def test_writer_column_is_a_Writer_instance_(self):
         self.assertTrue(isinstance(self.model.objects.first().writer, Writer))
+
+    def test_is_approved_column(self):
+        approved = self.model._meta.get_field(field_name='is_approved')
+        self.assertFalse(approved.default)
+        self.assertEqual(approved.verbose_name, 'is_approved')
+        self.assertIsNotNone(approved.help_text)
+
+    def test_approve_a_paper(self):
+        order = self.model.objects.first()
+        self.assertFalse(order.is_approved)
+        order.approve()
+        self.assertTrue(order.is_approved)
+
+    def test_disapprove_a_paper(self):
+        order = self.model.objects.first()
+        self.assertFalse(order.is_approved)
+        order.approve()
+        self.assertTrue(order.is_approved)
+        order.un_approve()
+        self.assertFalse(order.is_approved)

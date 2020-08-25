@@ -6,7 +6,9 @@ from app.views import (
     UpdateDisciplineAPIView, PaperTypeCreateAPIView, DeletePaperTypeAPIView, UpdatePaperTypeAPIView,
     RetrievePaperTypeAPIView, RetrieveAllActiveDisciplineAPIView, RetrieveDeletedDisciplineAPIView,
     RetrieveTotalAllDisciplineAPIView, RetrieveSpecificDisciplineAPIView, RetrieveSpecificPaperTypeAPIView,
-    RetrieveTotalAllPaperTypeAPIView, RetrieveAllPaperTypeAPIView, RetrieveDeletedPaperTypeAPIView
+    RetrieveTotalAllPaperTypeAPIView, RetrieveAllPaperTypeAPIView, RetrieveDeletedPaperTypeAPIView, AlertCreateAPIView,
+    RetrieveInActiveAlertAPIView, RetrieveAlertAPIView, UpdateAlertAPIView, DeleteAlertAPIView,
+    RetrieveSingleAlertAPIView
 )
 from django.test import TestCase
 
@@ -31,6 +33,9 @@ class AppUrlsTestCase(TestCase):
         cls.paper_type_retrieve_active = reverse(viewname='app:paper-type-retrieve-active', current_app=cls.current_app)
         cls.discipline_retrieve_admin = reverse(viewname='app:discipline-specific-admin', current_app=cls.current_app)
         cls.paper_type_retrieve_admin = reverse(viewname='app:paper-type-specific-admin', current_app=cls.current_app)
+        cls.alert_create = reverse(viewname='app:alert-create', current_app=cls.current_app)
+        cls.alert_retrieve_deleted = reverse(viewname='app:alert-retrieve-deleted', current_app=cls.current_app)
+        cls.alert_retrieve_active = reverse(viewname='app:alert-retrieve-active', current_app=cls.current_app)
         cls.discipline_update = reverse(viewname='app:discipline-update', current_app=cls.current_app,
                                         kwargs=cls.kwargs)
         cls.discipline_delete = reverse(viewname='app:discipline-delete', current_app=cls.current_app,
@@ -44,6 +49,12 @@ class AppUrlsTestCase(TestCase):
                                         kwargs=cls.kwargs)
         cls.paper_type_retrieve = reverse(viewname='app:paper-type-retrieve', current_app=cls.current_app,
                                           kwargs=cls.kwargs)
+        cls.alert_update = reverse(viewname='app:alert-update', current_app=cls.current_app,
+                                   kwargs=cls.kwargs)
+        cls.alert_delete = reverse(viewname='app:alert-delete', current_app=cls.current_app,
+                                   kwargs=cls.kwargs)
+        cls.alert_retrieve_single = reverse(viewname='app:alert-retrieve-single', current_app=cls.current_app,
+                                            kwargs=cls.kwargs)
 
     def common_(self, view_name, func, url, url_name, app_name='app', args=None, kwargs=None):
         response = resolve(view_name)
@@ -177,3 +188,50 @@ class AppUrlsTestCase(TestCase):
         """
         self.common_(view_name=self.paper_type_retrieve_admin, func=RetrieveSpecificPaperTypeAPIView,
                      url="api/v1/admin/paper/type/retrieve/admin", url_name="paper-type-specific-admin")
+
+    def test_alert_create_url(self):
+        """
+        Create a new alert endpoint
+        """
+        self.common_(view_name=self.alert_create, func=AlertCreateAPIView, url='api/v1/admin/alert/create',
+                     url_name='alert-create')
+
+    def test_alert_retrieve_deleted_url(self):
+        """
+        Allow master admin to retrieve deleted alerts
+        """
+        self.common_(view_name=self.alert_retrieve_deleted, func=RetrieveInActiveAlertAPIView,
+                     url='api/v1/admin/alert/retrieve/deleted',
+                     url_name='alert-retrieve-deleted')
+
+    def test_alert_retrieve_active_url(self):
+        """
+        Allow master admin to retrieve active alerts
+        """
+        self.common_(view_name=self.alert_retrieve_active, func=RetrieveAlertAPIView,
+                     url='api/v1/admin/alert/retrieve/active',
+                     url_name='alert-retrieve-active')
+
+    def test_alert_update_url(self):
+        """
+        Allow master admin to update an alert info
+        """
+        self.common_(view_name=self.alert_update, func=UpdateAlertAPIView,
+                     url='api/v1/admin/alert/update/<uuid:uuid>',
+                     url_name='alert-update', kwargs=self.kwargs)
+
+    def test_alert_deleted_url(self):
+        """
+        Allow master admin to deleted an alert
+        """
+        self.common_(view_name=self.alert_delete, func=DeleteAlertAPIView,
+                     url='api/v1/admin/alert/delete/<uuid:uuid>',
+                     url_name='alert-delete', kwargs=self.kwargs)
+
+    def test_alert_retrieve_single_url(self):
+        """
+        Allow master admin to retrieve data of a single alert
+        """
+        self.common_(view_name=self.alert_retrieve_single, func=RetrieveSingleAlertAPIView,
+                     url='api/v1/admin/alert/retrieve/single/<uuid:uuid>',
+                     url_name='alert-retrieve-single', kwargs=self.kwargs)

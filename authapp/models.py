@@ -31,8 +31,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     )
 
 
-# Todo Marked
-
 class User(AbstractUser, MinimalModel):
     """
     Model for Users
@@ -107,7 +105,8 @@ class User(AbstractUser, MinimalModel):
 
 
 class Avatar(MinimalModel):
-    user = models.ForeignKey(to=User, on_delete=models.PROTECT, null=False)
+    user = models.ForeignKey(to=User, on_delete=models.PROTECT, null=False, to_field='username',
+                             limit_choices_to={'is_active': True})
     # Todo: The default avatar should be handled on the frontend if the user does not upload their own.
     avatar = models.FileField(upload_to="Avatar/")
     is_avatar = models.BooleanField(help_text="If an avatar is deleted", default=True)
@@ -125,6 +124,7 @@ class Avatar(MinimalModel):
         verbose_name = _('Avatar')
         verbose_name_plural = _("Avatars")
         db_table = "Avatar"
+        ordering = ('-createdAt',)
 
 
 class Defaults(MinimalModel):
@@ -135,7 +135,8 @@ class Defaults(MinimalModel):
                                limit_choices_to={'is_active': True}, null=True)
     academic = models.CharField(choices=EducationLevelChoices.choices, default=None, null=True,
                                 max_length=17, help_text=_('Client default academic level'))
-    native = models.BooleanField(help_text=_('Client Only wants native English writers to work on their order'), default=False)
+    native = models.BooleanField(help_text=_('Client Only wants native English writers to work on their order'),
+                                 default=False)
     topic = models.CharField(max_length=200, null=True,
                              help_text=_("Topic a would like to always requests their paper to be done"))
     paper = models.CharField(max_length=200, null=True,
