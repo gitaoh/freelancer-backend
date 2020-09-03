@@ -39,8 +39,10 @@ class NotificationChoices(models.TextChoices):
     """
     Type of a notification
     """
-    UPDATE = 'UPDATE', _('UPDATE')
-    NOTIFICATION = 'NOTIFICATION', _('NOTIFICATION')
+    ToSUPPORT = 'ToSUPPORT', _('ToSUPPORT')  # writer writes to support
+    ToWRITER = 'ToWRITER', _('ToWRITER')  # writer writes to writer
+    SUPPORT = 'SUPPORT', _('SUPPORT')  # Admin writes as support
+    WRITER = 'WRITER', _('WRITER')  # Admin writes as Writer
     __empty__ = _('Unknown')
 
 
@@ -56,6 +58,16 @@ class EducationLevelChoices(models.TextChoices):
     __empty__ = _('Unknown')
 
 
+class SchoolChoices(models.TextChoices):
+    ALL = 'ALL', _('ALL')
+    HIGHSCHOOL = 'HIGHSCHOOL', _('HIGHSCHOOL')
+    PHD = 'PHD', _('PHD')
+    GRADUATE = 'GRADUATE', _('GRADUATE')
+    UNDERGRADUATE_1_2 = 'UNDERGRADUATE_1_2', _('UNDERGRADUATE_1_2')
+    UNDERGRADUATE_3_4 = 'UNDERGRADUATE_3_4', _('UNDERGRADUATE_3_4')
+    __empty__ = _('Unknown')
+
+
 class PreferencesChoices(models.TextChoices):
     """
     Choice for writer preference
@@ -63,4 +75,11 @@ class PreferencesChoices(models.TextChoices):
     STANDARD = 'STANDARD', _('STANDARD')
     TOP5 = 'TOP5', _('TOP5')
     EXPERT = 'EXPERT', _('EXPERT')
+    __empty__ = _('Unknown')
+
+
+class FileLabelChoices(models.TextChoices):
+    FINAL = 'FINAL', _('FINAL')
+    DRAFT = 'DRAFT', _('DRAFT')
+    FILE = 'FILE', _('FILE')
     __empty__ = _('Unknown')

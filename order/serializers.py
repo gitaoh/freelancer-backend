@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from recycle.uuid_generator import UUIDGenerator
-from order.models import Order, Files, Notification, Cancel
+from order.models import Order, Files, Message, Cancel
+from authapp.models import User
 import random
+from app.choices import AdminCategory
 from uuid import UUID
 
 
@@ -73,6 +75,12 @@ class OrderSerializer(serializers.ModelSerializer, UUIDGenerator):
         return instance
 
 
+class OrderUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        exclude = ['deletedAt', 'card', 'uuid', 'user', 'deleted_by']
+
+
 class OrderFilesSerializer(serializers.ModelSerializer):
     """
     serializer for the orderFiles model
@@ -80,14 +88,6 @@ class OrderFilesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Files
-        fields = "__all__"
-
-
-class NotificationSerializer(serializers.ModelSerializer):
-    uuid = serializers.UUIDField()
-
-    class Meta:
-        model = Notification
         fields = "__all__"
 
 
@@ -115,4 +115,26 @@ class CancelModeSerializer(serializers.ModelSerializer, UUIDGenerator):
             order=Order.objects.all().get(uuid__exact=UUID(str(validated_data['order']))),
             uuid=self.get_fields(),
             user=self.context['request'].user
+        )
+
+
+class MessageModelSerializer(serializers.ModelSerializer, UUIDGenerator):
+    """
+    Allow client and admin to communicate through messages
+    """
+    model = Message
+
+    class Meta:
+        model = Message
+        fields = ['content', 'user', 'order']
+
+    def create(self, validated_data):
+        return Message.objects.create(
+            content=validated_data['content'],
+            uuid=self.generate_uuid(),
+            order=Order.objects.get(is_paper=True, uuid__exact=str(validated_data['order'])),
+            user=User.objects.get(is_active=True, is_superuser=False, is_staff=False,
+                                  username__exact=str(validated_data['user']), user_type=AdminCategory.USER),
+            admin=User.objects.get(is_active=True, is_superuser=True, is_staff=False,
+                                   username__exact=str(validated_data['admin']))
         )

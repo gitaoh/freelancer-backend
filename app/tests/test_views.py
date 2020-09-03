@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from app.views import (
     DeleteDisciplineAPIView, RetrieveDeletedDisciplineAPIView, RetrieveSpecificDisciplineAPIView,
-    RetrieveTotalAllDisciplineAPIView, UpdateDisciplineAPIView,
+    RetrieveTotalAllDisciplineAPIView, UpdateDisciplineAPIView, robot,
     DisciplineCreateAPIView, RetrieveDisciplineAPIView, RetrieveAllActiveDisciplineAPIView,
     RetrieveSpecificPaperTypeAPIView)
 from knox.models import AuthToken
@@ -12,6 +12,27 @@ from authapp.models import User
 from django.conf import settings
 from uuid import UUID
 from django.utils.timezone import now
+
+
+class RobotsViewTestCase(APITestCase):
+    path = f"/{resolve(reverse('authapp:rating-create')).route}"
+    view = robot
+    GET = True
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.view = reverse('robot')
+
+    def test_view(self):
+        response = self.client.get(self.view)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.content, b'User-agent: *\nDisallow: /\n')
+        self.assertEqual(response.request['PATH_INFO'], '/robots.txt')
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertEqual(response.request['CONTENT_TYPE'], 'application/octet-stream')
+        self.assertEqual(response.resolver_match.func, robot)
+        self.assertEqual(len(response.templates), 1)
+        self.assertEqual(response.context.template_name, 'robots.txt')
 
 
 class CommonTestCase(APITestCase):

@@ -145,3 +145,11 @@ class RetrieveAvatarModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Avatar
         exclude = ['deletedAt']
+
+
+class UpdateUserModelSerializer(serializers.ModelSerializer):
+    """Allow a client/user to update their information"""
+
+    class Meta:
+        model = User
+        fields = ['phone_number', 'updates']

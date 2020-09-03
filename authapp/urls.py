@@ -1,7 +1,7 @@
 from .views import (
     RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView, AvatarCreateAPIView,
     RatingCreateAPIView, MakeAdminMasterAPIView, MakeUserAdminAPIView, CreateDefaultAPIView, UpdateDefaultsAPIView,
-    RetrieveDefaultsAPIView, DeleteAvatarModelAPIView, RetrieveAvatarAPIView)
+    RetrieveDefaultsAPIView, DeleteAvatarModelAPIView, RetrieveAvatarAPIView, UpdateUserAPIView)
 from django.urls import path, include
 from knox import views as knox_views
 
@@ -20,10 +20,10 @@ urlpatterns = [
     path('user', AuthUserAPIView.as_view(), name='retrieve-user'),
     # Update users password
     path('users/password/reset/<str:username>', UserUpdatePasswordApiView.as_view(), name='update-user-password'),
+    path('user/update/<str:username>', UpdateUserAPIView.as_view(), name="update-user-info"),
     # Delete a user endpoint
     path('users/delete/<str:username>', UserDeleteApiView.as_view(), name='delete-user'),
     # reset users password
-    path('forgot/password/reset', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path('rating/create', RatingCreateAPIView.as_view(), name="rating-create"),
     # user_type change
     path('make/', include([

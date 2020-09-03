@@ -1,11 +1,16 @@
+from pprint import pprint
+
+from django.shortcuts import render
 from knox.auth import TokenAuthentication
+from requests import Response
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
-from authapp.permissions.permissions import IsMasterAdmin, IsUser
+
+from authapp.permissions.permissions import IsMasterAdmin
+from .models import Discipline, PaperType, Alert
 from .serializers import (
     DisciplineSerializer, PaperTypeSerializer, DisciplineGetSerializer, AlertModelSerialize,
     AlertModelSerializer, AlertModelDeletedSerialize)
-from .models import Discipline, PaperType, Alert
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, ListAPIView
 
 
 # Create discipline
@@ -15,7 +20,7 @@ class DisciplineCreateAPIView(CreateAPIView):
     """
     serializer_class = DisciplineSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated,)
     http_method_names = ['post']
     model = Discipline
 
@@ -352,6 +357,24 @@ class DeleteAlertAPIView(DestroyAPIView):
 
     def perform_destroy(self, instance):
         """ Trash the alert """
-        instance.deleted_by = self.request.user
+        instance.deleted_by = self.request.query_params
         instance.save()
         instance.trash()
+
+
+def index(request):
+    pprint(request.user.username, indent=4)
+    return render(request, 'index.html')
+
+
+def registration(request):
+    return render(request, 'authapp/emails/registration.html')
+
+
+def robot(request):
+    """
+    Render the robots.txt file
+    :param: request
+    :return: render
+    """
+    return render(request, template_name='robots.txt', content_type='text/plain', status=Response.status_code)

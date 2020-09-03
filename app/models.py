@@ -1,26 +1,21 @@
-from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from app.abstract import MinimalModel
-from order.choices import EducationLevelChoices
+from order.choices import EducationLevelChoices, SchoolChoices
 from django.utils.timezone import now
-from .choices import AlertChoices, AlertTypeChoices
-
-
-def get_sentinel_user():
-    return get_user_model().objects.get_or_create(username='deleted')[0]
+from .choices import AlertChoices, AlertTypeChoices, AdminCategory
 
 
 class CommonDP(MinimalModel):
     admin = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', null=False,
-                              on_delete=models.PROTECT, limit_choices_to={'user_type': 'MASTER', 'is_active': True})
+                              on_delete=models.PROTECT, limit_choices_to={'user_type': AdminCategory.MASTER, 'is_active': True})
     name = models.CharField(max_length=200, unique=True)
     description = models.TextField()
     price = models.CharField(max_length=10, null=False, default=0)
     # Conversion is handled by the frontend
-    level = models.CharField(max_length=20, null=False, default=EducationLevelChoices.HIGHSCHOOL,
-                             choices=EducationLevelChoices.choices)
+    level = models.CharField(max_length=20, null=False, default=SchoolChoices.HIGHSCHOOL,
+                             choices=SchoolChoices.choices)
     is_active = models.BooleanField(default=True, null=False)
 
     def __str__(self):

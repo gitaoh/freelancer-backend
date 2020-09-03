@@ -21,7 +21,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
                                                    reset_password_token.key)
     send_mail(
         # title:
-        "Password Reset for {title}".format(title="Kromon"),
+        "Joseph Gitau {title}".format(title="Kromon"),
         # message:
         email_plaintext_message,
         # from:
@@ -32,9 +32,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 
 class User(AbstractUser, MinimalModel):
-    """
-    Model for Users
-    """
+    """ Model for Users """
     phone_number = models.CharField(_("phone number"), max_length=15, null=True, unique=True,
                                     help_text="Ensure you Phone number only contain numbers",
                                     validators=[
@@ -156,9 +154,7 @@ class Defaults(MinimalModel):
 class Rating(MinimalModel):
     """ Custom rating from the user when they delete their account """
     # Not more tha 10 in count
-    rate = models.PositiveIntegerField(validators=[
-        MaxValueValidator(limit_value=10, message='Rating cannot be more than ten.')
-    ])
+    rate = models.PositiveIntegerField(validators=[MaxValueValidator(limit_value=10)])
     client = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.PROTECT,
                                null=False)
 

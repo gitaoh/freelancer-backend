@@ -1,4 +1,4 @@
-from authapp.views import robot, RatingCreateAPIView, MakeAdminMasterAPIView
+from authapp.views import RatingCreateAPIView, MakeAdminMasterAPIView
 from rest_framework.test import APITestCase
 from django.urls import reverse, resolve
 from rest_framework import status
@@ -6,27 +6,6 @@ from authapp.models import User, Rating
 from knox.models import AuthToken
 from uuid import UUID
 from recycle.method_checker import MethodCheckerTestCase
-
-
-class RobotsViewTestCase(APITestCase):
-    path = f"/{resolve(reverse('authapp:rating-create')).route}"
-    view = robot
-    GET = True
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.view = reverse('robot')
-
-    def test_view(self):
-        response = self.client.get(self.view)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.content, b'User-agent: *\nDisallow: /\n')
-        self.assertEqual(response.request['PATH_INFO'], '/robots.txt')
-        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
-        self.assertEqual(response.request['CONTENT_TYPE'], 'application/octet-stream')
-        self.assertEqual(response.resolver_match.func, robot)
-        self.assertEqual(len(response.templates), 1)
-        self.assertEqual(response.context.template_name, 'robots.txt')
 
 
 class CreateRatingTestCase(MethodCheckerTestCase, APITestCase):
@@ -58,7 +37,7 @@ class CreateRatingTestCase(MethodCheckerTestCase, APITestCase):
 
 
 class MakeAdminMasterTestCase(APITestCase):
-    path = f"/{resolve(reverse('authapp:make-user-master-admin')).route}"
+    path = f"/{resolve(reverse('authapp:make-user-master-admin', kwargs={'uuid': UUID('475b1446-1d3e-4464-859c-bca080609034')})).route}"
     view = MakeAdminMasterAPIView
     PATCH = True
     PUT = True
@@ -72,7 +51,8 @@ class MakeAdminMasterTestCase(APITestCase):
                                              password="50391798", uuid=UUID('475b1446-1d3e-4464-859c-bca080609042'))
         cls.user = User.objects.create_user(password='50391798', username="user", user_type="USER",
                                             email="user@gmail.com", uuid=UUID('475b1446-1d3e-4464-859c-bca080609034'))
-        cls.url_name = reverse('authapp:make-user-master-admin')
+        cls.url_name = reverse('authapp:make-user-master-admin',
+                               kwargs={"uuid": UUID('475b1446-1d3e-4464-859c-bca080609034')})
         cls.token = AuthToken.objects.create(user=cls.master)
         cls.token_user = AuthToken.objects.create(user=cls.user)
         cls.token_admin = AuthToken.objects.create(user=cls.admin)

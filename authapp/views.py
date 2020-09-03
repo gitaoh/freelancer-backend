@@ -11,7 +11,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .permissions.permissions import IsMiniAdmin, IsMasterAdmin, IsUser
 from .serializers import (
     AuthUserSerializer, AuthRegisterSerializer, UserSerializer, AvatarModelSerializer, RetrieveAvatarModelSerializer,
-    AuthUserResetPasswordSerializer, RatingModelSerializer, DefaultsModelSerializer, RetrieveDefaultsModelSerializer)
+    AuthUserResetPasswordSerializer, RatingModelSerializer, DefaultsModelSerializer, RetrieveDefaultsModelSerializer,
+    UpdateUserModelSerializer)
 from django.contrib.auth import login, user_logged_in, update_session_auth_hash
 from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -92,11 +93,12 @@ class LoginAPI(KnoxLoginView):
 
 class AuthUserAPIView(RetrieveAPIView):
     """
+    MASTER, ADMIN, CLIENT
     :returns an authenticated user information
     Retrieve: Get user information
     """
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsUser)
+    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin | IsMiniAdmin)
     serializer_class = AuthUserSerializer
     model = User
     http_method_names = ['get']
@@ -215,15 +217,6 @@ class UserDeleteApiView(DestroyAPIView):
 
     def perform_destroy(self, instance):
         instance.deactivate()
-
-
-def robot(request):
-    """
-    Render the robots.txt file
-    :param: request
-    :return: render
-    """
-    return render(request, template_name='robots.txt', content_type='text/plain', status=Response.status_code)
 
 
 class MakeUserAdminAPIView(UpdateAPIView):
@@ -388,3 +381,16 @@ class RetrieveAvatarAPIView(ListAPIView):
 
     def get_object(self):
         return self.model.objects.all().filter(user__is_active=True, user=self.request.user, is_avatar=True)
+
+
+class UpdateUserAPIView(UpdateAPIView):
+    """ Update users information """
+    model = User
+    http_method_names = ['patch']
+    permission_classes = (IsMasterAdmin | IsMiniAdmin | IsUser, IsAuthenticated)
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = UpdateUserModelSerializer
+    lookup_field = 'username'
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)

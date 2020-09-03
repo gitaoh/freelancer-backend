@@ -1,9 +1,10 @@
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from app.abstract import MinimalModel
 from django.db import models
+from app.choices import AdminCategory
 from .choices import (
     NotificationChoices, PreferencesChoices, SpacingChoices, FormatChoices, StatusChoices,
-    EducationLevelChoices)
+    EducationLevelChoices, FileLabelChoices)
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
@@ -59,6 +60,8 @@ class Files(MinimalModel):
                                    help_text='Client description of what this files contains')
     file = models.FileField(help_text="Please add files if you have any.", upload_to='files')
     is_deleted = models.BooleanField(default=False, help_text=_('if file is deleted or not'))
+    # Todo Different label should have different file icons
+    label = models.CharField(choices=FileLabelChoices.choices, default=FileLabelChoices.FILE, null=False, max_length=5)
 
     def __str__(self):
         return self.description
@@ -94,8 +97,8 @@ class Order(MinimalModel):
                                limit_choices_to={'is_active': True, }, to_field='username', null=True, default=None,
                                help_text=_('Who is assigned to work on this order'))
     user = models.ForeignKey(verbose_name="user", to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                             limit_choices_to={'is_active': True, 'is_staff': False}, to_field='username',
-                             null=False, help_text=_('Client Placing the order'))
+                             limit_choices_to={'is_active': True},
+                             to_field='username', null=False, help_text=_('Client Placing the order'))
     paper_type = models.CharField(_("paper_type"), max_length=200, null=False, help_text=_('This order paper type'))
     discipline = models.CharField(_("discipline"), max_length=200, null=False, help_text=_('This orders discipline'))
     academic = models.CharField(_("academic"), choices=EducationLevelChoices.choices, max_length=17, null=False,
@@ -137,10 +140,9 @@ class Order(MinimalModel):
     is_paper = models.BooleanField(_('is_paper'), default=True, help_text=_('Whether a paper id deleted/canceled.'))
     is_approved = models.BooleanField(_('is_approved'), default=False,
                                       help_text=_('Whether a paper is approved or not approved.'))
-    deleted_by = models.ForeignKey(verbose_name="writer", to=Writer, on_delete=models.PROTECT, default=None,
-                                   limit_choices_to={'is_active': True, 'is_superuser': True, 'is_staff': True,
-                                                     'user_type': 'MASTER'}, to_field='username', null=True,
-                                   help_text=_('Who deleted this order'), related_name='deleted_by')
+    deleted_by = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT, to_field='username',
+                                   default=None, limit_choices_to={'is_active': True}, null=True,
+                                   help_text=_('Who deleted this order'), related_name='deletedBy')
 
     def __str__(self):
         return f"{self.discipline}, {self.paper_type}"
@@ -182,23 +184,34 @@ class Order(MinimalModel):
         ordering = ('-createdAt',)
 
 
-class Notification(MinimalModel):
-    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.PROTECT,
-                             default=None, null=True,
-                             limit_choices_to={'is_active': True, 'user_type': 'USER', 'is_staff': False,
-                                               'is_superuser': False},
+class Message(MinimalModel):
+    """
+    Notify a client about updates of their order or update of the platform
+    """
+    # Todo get and set user who created this order to this notification
+    """
+    Should not be null since we will create a message to an already existing order so user will be 
+    the user/client who has created the order
+    """
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', on_delete=models.PROTECT, null=False,
+                             limit_choices_to={'is_active': True},
                              help_text=_('User to be sent this notification'))
+    # Todo Authenticated Admin who responds to the client
+    """
+    Admin can be null since 
+    """
+    admin = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field="username", on_delete=models.PROTECT, null=False,
+                              related_name='created', related_query_name='creator', help_text=_('Which admin created'),
+                              limit_choices_to={'is_active': True})
     content = models.TextField(help_text=_('Notification message'), max_length=10000)
-    created = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field="username", on_delete=models.PROTECT,
-                                default=None, null=True, related_name='created', related_query_name='creator',
-                                help_text=_('Which admin created'),
-                                limit_choices_to={'is_active': True, 'user_type': ['MASTER', 'ADMIN']})
-    notify = models.CharField(choices=NotificationChoices.choices, default=NotificationChoices.NOTIFICATION,
-                              max_length=12, help_text=_('Type of notification to send the user'))
+    # Todo Assign the order being questioned
     """
-    If Update a Drop down 
-    If Notification a Message 
+    Order should not be null since we are writing a message concerning an already existing  order
     """
+    order = models.ForeignKey(to=Order, to_field='uuid', limit_choices_to={'is_paper': True}, on_delete=models.PROTECT,
+                              null=False)
+    notify = models.CharField(choices=NotificationChoices.choices, default=NotificationChoices.ToSUPPORT,
+                              max_length=12, help_text=_('Who should see this notification.'))
     read = models.BooleanField(default=False, help_text=_('If notifications is read or unread'))
     is_notify = models.BooleanField(help_text="if a notification is deleted or active", default=True)
 
