@@ -27,7 +27,8 @@ class DisciplineGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Discipline
-        fields = ("admin", 'name', 'description', 'level', 'price', 'createdAt', 'updatedAt')
+        fields = (
+            'admin', 'uuid', 'is_active', 'name', 'description', 'level', 'price', 'createdAt', 'updatedAt', 'valid')
 
 
 class PaperTypeSerializer(serializers.ModelSerializer, UUIDGenerator):
@@ -38,7 +39,7 @@ class PaperTypeSerializer(serializers.ModelSerializer, UUIDGenerator):
 
     class Meta:
         model = PaperType
-        fields = ("admin", 'name', 'description', 'level', 'price')
+        fields = ('name', 'description', 'level', 'price')
 
     def create(self, validated_data):
         return PaperType.objects.create(

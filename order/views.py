@@ -4,7 +4,8 @@ from rest_framework.generics import (CreateAPIView, ListAPIView, DestroyAPIView,
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
-from .serializers import OrderSerializer, OrderFilesSerializer, CancelModeSerializer, MessageModelSerializer
+from .serializers import OrderSerializer, OrderFilesSerializer, CancelModeSerializer, MessageModelSerializer, \
+    WriterModelSerializer, RetrieveWriterModelSerializer
 from .models import Files, Order, Cancel, Writer, Message
 from authapp.permissions.permissions import IsMiniAdmin, IsUser, IsMasterAdmin
 
@@ -240,6 +241,9 @@ class SingleUsersSpecificOrdersApiView(RetrieveAPIView):
         return self.model.objects.all().filter(user=self.request.user, is_paper=True)
 
 
+from rest_framework.parsers import FileUploadParser
+
+
 # OrderFiles
 class OrderFilesApiView(CreateAPIView):
     """
@@ -392,3 +396,101 @@ class DeleteMessageAPIView(DestroyAPIView):
 
     def get_queryset(self):
         return self.model.objects.all().filter(is_notify=True, deletedAt__isnull=True)
+
+
+class CreateWriterAPIView(CreateAPIView):
+    """ Create anew writer """
+    http_method_names = ['post']
+    model = Writer
+    serializer_class = WriterModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
+
+    def get_queryset(self):
+        return self.model.objects.all()
+
+
+class DeleteWriterAPIView(DestroyAPIView):
+    """ Mark a writer as inactive / deleted """
+    http_method_names = ['delete']
+    model = Writer
+    serializer_class = RetrieveWriterModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
+    lookup_field = 'uuid'
+    lookup_url_kwarg = 'uuid'
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
+
+    def perform_destroy(self, instance):
+        instance.deactivate()
+
+
+class ActivateWriterAPIView(UpdateAPIView):
+    """ Reactivate writer """
+    http_method_names = ['patch', 'put']
+    model = Writer
+    serializer_class = RetrieveWriterModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
+    lookup_field = 'uuid'
+    lookup_url_kwarg = 'uuid'
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
+
+    def perform_update(self, serializer):
+        serializer.activate()
+
+
+class RetrieveWriterAPIView(RetrieveAPIView):
+    """ retrieve information of a single writer """
+    http_method_names = ['get']
+    model = Writer
+    serializer_class = RetrieveWriterModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
+    lookup_field = 'uuid'
+    lookup_url_kwarg = 'uuid'
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
+
+
+class UpdateWriterAPIView(UpdateAPIView):
+    """ update a single writer information """
+    http_method_names = ['put', 'patch']
+    model = Writer
+    serializer_class = RetrieveWriterModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    lookup_field = 'uuid'
+    lookup_url_kwarg = 'uuid'
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
+
+
+class RetrieveWriterListAPIView(ListAPIView):
+    """  Retrieve  all for the user mainly active writers """
+    http_method_names = ['get']
+    model = Writer
+    serializer_class = RetrieveWriterModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
+
+
+class RetrieveAllWriterListAPIView(ListAPIView):
+    """ All writers for the master admin """
+    http_method_names = ['get']
+    model = Writer
+    serializer_class = RetrieveWriterModelSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsMasterAdmin)
+
+    def get_queryset(self):
+        return self.model.objects.all()

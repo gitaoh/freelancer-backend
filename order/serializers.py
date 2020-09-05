@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from recycle.uuid_generator import UUIDGenerator
-from order.models import Order, Files, Message, Cancel
+from order.models import Order, Files, Message, Cancel, Writer
 from authapp.models import User
 import random
 from app.choices import AdminCategory
@@ -137,4 +137,24 @@ class MessageModelSerializer(serializers.ModelSerializer, UUIDGenerator):
                                   username__exact=str(validated_data['user']), user_type=AdminCategory.USER),
             admin=User.objects.get(is_active=True, is_superuser=True, is_staff=False,
                                    username__exact=str(validated_data['admin']))
+        )
+
+
+class RetrieveWriterModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Writer
+        fields = ['uuid', 'first_name', 'last_name', 'username', 'level', 'bio', 'createdAt', 'updatedAt']
+
+
+class WriterModelSerializer(serializers.ModelSerializer, UUIDGenerator):
+    model = Writer
+
+    class Meta:
+        model = Writer
+        fields = ['username', 'level', 'first_name', 'last_name', 'email', 'bio']
+
+    def create(self, validated_data):
+        return self.model.objects.create(
+            **validated_data,
+            uuid=self.generate_uuid()
         )

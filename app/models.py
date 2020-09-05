@@ -9,7 +9,8 @@ from .choices import AlertChoices, AlertTypeChoices, AdminCategory
 
 class CommonDP(MinimalModel):
     admin = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='username', null=False,
-                              on_delete=models.PROTECT, limit_choices_to={'user_type': AdminCategory.MASTER, 'is_active': True})
+                              on_delete=models.PROTECT,
+                              limit_choices_to={'user_type': AdminCategory.MASTER, 'is_active': True})
     name = models.CharField(max_length=200, unique=True)
     description = models.TextField()
     price = models.CharField(max_length=10, null=False, default=0)
@@ -17,6 +18,7 @@ class CommonDP(MinimalModel):
     level = models.CharField(max_length=20, null=False, default=SchoolChoices.HIGHSCHOOL,
                              choices=SchoolChoices.choices)
     is_active = models.BooleanField(default=True, null=False)
+    valid = models.BooleanField(default=True, null=False)
 
     def __str__(self):
         return self.name
@@ -26,6 +28,14 @@ class CommonDP(MinimalModel):
         self.deletedAt = now()
         self.save()
         return
+
+    def verify(self):
+        self.valid = True
+        self.save()
+
+    def is_invalid(self):
+        self.valid = False
+        self.save()
 
     class Meta:
         abstract = True

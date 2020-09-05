@@ -106,7 +106,7 @@ class Avatar(MinimalModel):
     user = models.ForeignKey(to=User, on_delete=models.PROTECT, null=False, to_field='username',
                              limit_choices_to={'is_active': True})
     # Todo: The default avatar should be handled on the frontend if the user does not upload their own.
-    avatar = models.FileField(upload_to="Avatar/")
+    avatar = models.ImageField(upload_to="Avatar/", )
     is_avatar = models.BooleanField(help_text="If an avatar is deleted", default=True)
 
     def __str__(self):

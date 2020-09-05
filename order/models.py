@@ -22,6 +22,7 @@ class Writer(MinimalModel):
                                 error_messages={'unique': _("A user with this username already exists.")})
     first_name = models.CharField(_('first name'), max_length=30, help_text=_("Writer first name."))
     last_name = models.CharField(_('last name'), max_length=150, help_text=_("Writer last name."))
+    bio = models.TextField(null=True)
     email = models.EmailField(_('email address'), unique=True, help_text=_("Writer email."))
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Writer is active/deactivated'))
     level = models.CharField(choices=PreferencesChoices.choices, default=PreferencesChoices.STANDARD, max_length=8,
@@ -130,6 +131,7 @@ class Order(MinimalModel):
     progressive = models.BooleanField(default=False, help_text=_('If order is a progressive delivery'))
     cost = models.PositiveIntegerField(default=0, help_text=_('The cost of a paper'))
     smart = models.BooleanField(_('is_smart'), default=False, help_text=_('Whether an order is  a smart paper.'))
+    copy = models.BooleanField(default=False, help_text=_('Whether to provide a copy of the sources.'))
     paid = models.BooleanField(_('paid'), default=False, help_text=_('Whether an order is paid or not.'))
     rate = models.PositiveIntegerField(null=True, default=0,
                                        help_text=_('Rating of how a paper was done by this writer'))
