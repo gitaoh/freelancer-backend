@@ -82,9 +82,7 @@ class Alert(MinimalModel):
                               help_text=_('Status of the Alert.'))
     _type = models.CharField(max_length=12, choices=AlertTypeChoices.choices, default=AlertTypeChoices.INFORMATIVE,
                              null=False, help_text=_('Type of the alert being created.'))
-    # TODO Null=False
-    _from = models.DateTimeField(null=True, auto_now_add=True, help_text=_('Active from.'))
-    # TODO Null=False
+    _from = models.DateTimeField(null=False, auto_now_add=True, help_text=_('Active from.'))
     to = models.DateTimeField(null=False, help_text=_('Active until.'), auto_now=True)
     is_active = models.BooleanField(default=True, help_text=_('Deleted or active.'))
     deleted_by = models.ForeignKey(to_field='username', null=True, to=settings.AUTH_USER_MODEL,

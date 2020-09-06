@@ -5,7 +5,7 @@ from authapp.models import User
 import random
 from app.choices import AdminCategory
 from uuid import UUID
-
+from knox.models import AuthToken
 
 def order_id_generator():
     # FrontLetters
@@ -126,10 +126,11 @@ class MessageModelSerializer(serializers.ModelSerializer, UUIDGenerator):
 
     class Meta:
         model = Message
-        fields = ['content', 'user', 'order']
+        fields = ['title', 'content', 'user', 'order']
 
     def create(self, validated_data):
         return Message.objects.create(
+            title=validated_data['title'],
             content=validated_data['content'],
             uuid=self.generate_uuid(),
             order=Order.objects.get(is_paper=True, uuid__exact=str(validated_data['order'])),

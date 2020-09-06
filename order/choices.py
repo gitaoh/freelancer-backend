@@ -83,3 +83,9 @@ class FileLabelChoices(models.TextChoices):
     DRAFT = 'DRAFT', _('DRAFT')
     FILE = 'FILE', _('FILE')
     __empty__ = _('Unknown')
+
+
+class MessageStatusChoices(models.TextChoices):
+    REVIEW = 'REVIEW', _('REVIEW')
+    ACTIVE = 'ACTIVE', _('ACTIVE')
+    __empty__ = _('Unknown')

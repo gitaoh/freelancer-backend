@@ -4,7 +4,7 @@ from django.db import models
 from app.choices import AdminCategory
 from .choices import (
     NotificationChoices, PreferencesChoices, SpacingChoices, FormatChoices, StatusChoices,
-    EducationLevelChoices, FileLabelChoices)
+    EducationLevelChoices, FileLabelChoices, MessageStatusChoices)
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
@@ -200,7 +200,7 @@ class Message(MinimalModel):
                              help_text=_('User to be sent this notification'))
     # Todo Authenticated Admin who responds to the client
     """
-    Admin can be null since 
+    Admin can be null 
     """
     admin = models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field="username", on_delete=models.PROTECT, null=False,
                               related_name='created', related_query_name='creator', help_text=_('Which admin created'),
@@ -208,7 +208,7 @@ class Message(MinimalModel):
     content = models.TextField(help_text=_('Notification message'), max_length=10000)
     # Todo Assign the order being questioned
     """
-    Order should not be null since we are writing a message concerning an already existing  order
+    Order should not be null since we are writing a message concerning an already existing order
     """
     order = models.ForeignKey(to=Order, to_field='uuid', limit_choices_to={'is_paper': True}, on_delete=models.PROTECT,
                               null=False)
@@ -216,6 +216,11 @@ class Message(MinimalModel):
                               max_length=12, help_text=_('Who should see this notification.'))
     read = models.BooleanField(default=False, help_text=_('If notifications is read or unread'))
     is_notify = models.BooleanField(help_text="if a notification is deleted or active", default=True)
+    status = models.CharField(null=False, max_length=6, choices=MessageStatusChoices.choices,
+                              default=MessageStatusChoices.REVIEW,
+                              help_text=_('IF a message can be read by user eg. wen can create a message and put it on '
+                                          'review then after a review set the state to active the the client will be '
+                                          'able to view the message'))
 
     def __str__(self):
         return f"{self.user}, {self.read}"
@@ -226,9 +231,9 @@ class Message(MinimalModel):
         self.save()
 
     class Meta:
-        verbose_name = _('Notification')
-        verbose_name_plural = _('Notifications')
-        db_table = "Notification"
+        verbose_name = _('Message')
+        verbose_name_plural = _('Messages')
+        db_table = "Message"
         ordering = ('-createdAt',)
 
 

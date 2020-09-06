@@ -305,19 +305,21 @@ class UpdateDefaultsAPIView(UpdateAPIView):
         return self.model.objects.all()
 
 
-class RetrieveDefaultsAPIView(RetrieveAPIView):
+class RetrieveDefaultsAPIView(ListAPIView):
     """ Allow a user/client to retrieve their default config """
     http_method_names = ['get']
     permission_classes = (IsUser, IsAuthenticated)
     authentication_classes = (TokenAuthentication,)
     model = Defaults
     serializer_class = RetrieveDefaultsModelSerializer
-    lookup_field = 'uuid'
-    lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
         """ Query from data where users are active """
         return self.model.objects.all().filter(user__is_active=True)
+
+    def get_object(self):
+        """ Return User specific data """
+        return self.model.objects.all().filter(user=self.request.user)
 
 
 """
@@ -369,7 +371,7 @@ class DeleteAvatarModelAPIView(DestroyAPIView):
 
 
 class RetrieveAvatarAPIView(ListAPIView):
-    """ Allow user to retrieve their avatar link """
+    """ Allow user to retrieve their avatar """
     http_method_names = ['get']
     permission_classes = (IsMasterAdmin | IsMiniAdmin | IsUser, IsAuthenticated)
     authentication_classes = (TokenAuthentication,)

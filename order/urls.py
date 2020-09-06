@@ -4,8 +4,8 @@ from .views import (
     SingleTOAdminsOrderApiView, OrderCancelApiView, OrderUnCancelApiView, OrderApproveAPIView, OrderDisApproveAPIView,
     CreateCancelReasonAPIView, DeleteCancelReasonAPIView, OrderFilesApiView, OrderFileRetrieveAPIView,
     OrderFileRetrieveListAPIView, OrderFilesDeleteApiView, OrderUpdateApiView, MessageCreateAPIView, ListMessageAPIView,
-    DeleteMessageAPIView, CreateWriterAPIView, RetrieveWriterAPIView, RetrieveWriterListAPIView, UpdateWriterAPIView,
-    DeleteWriterAPIView, ActivateWriterAPIView, RetrieveAllWriterListAPIView)
+    DeleteMessageAPIView, CreateWriterAPIView, RetrieveWriterAPIView, RetrieveWriterActiveAPIView, UpdateWriterAPIView,
+    DeleteWriterAPIView, ActivateWriterAPIView, RetrieveDeletedWriterListAPIView)
 
 app_name = "order"
 
@@ -41,9 +41,9 @@ urlpatterns = [
     path('writer/', include([
         path('create', CreateWriterAPIView.as_view(), name='writer-create'),
         path('retrieve/', include([
-            path('<uuid:uuid>', RetrieveWriterAPIView.as_view(), name="writer-single-retrieve"),
-            path('list', RetrieveWriterListAPIView.as_view(), name='writer-list-retrieve'),
-            path('all', RetrieveAllWriterListAPIView.as_view(), name='writer-all-retrieve')
+            path('get/<uuid:uuid>', RetrieveWriterAPIView.as_view(), name="writer-single-retrieve"),
+            path('active', RetrieveWriterActiveAPIView.as_view(), name='writer-list-retrieve'),
+            path('deleted', RetrieveDeletedWriterListAPIView.as_view(), name='writer-all-retrieve')
         ])),
         path('update/<uuid:uuid>', UpdateWriterAPIView.as_view(), name="writer-update"),
         path('delete/<uuid:uuid>', DeleteWriterAPIView.as_view(), name="writer-delete"),

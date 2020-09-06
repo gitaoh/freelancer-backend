@@ -372,7 +372,7 @@ class MessageCreateAPIView(CreateAPIView):
 
 class ListMessageAPIView(ListAPIView):
     """
-    A list of all message of a order
+    A list of all message of an order
     """
     serializer_class = MessageModelSerializer
     model = Message
@@ -472,7 +472,7 @@ class UpdateWriterAPIView(UpdateAPIView):
         return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
 
 
-class RetrieveWriterListAPIView(ListAPIView):
+class RetrieveWriterActiveAPIView(ListAPIView):
     """  Retrieve  all for the user mainly active writers """
     http_method_names = ['get']
     model = Writer
@@ -484,7 +484,7 @@ class RetrieveWriterListAPIView(ListAPIView):
         return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
 
 
-class RetrieveAllWriterListAPIView(ListAPIView):
+class RetrieveDeletedWriterListAPIView(ListAPIView):
     """ All writers for the master admin """
     http_method_names = ['get']
     model = Writer
@@ -493,4 +493,4 @@ class RetrieveAllWriterListAPIView(ListAPIView):
     permission_classes = (IsAuthenticated, IsMasterAdmin)
 
     def get_queryset(self):
-        return self.model.objects.all()
+        return self.model.objects.all().filter(is_active=False, deletedAt__isnull=False)

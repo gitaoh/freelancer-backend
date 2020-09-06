@@ -39,7 +39,7 @@ urlpatterns = [
     # user avatar
     path('avatar/', include([
         path('create', AvatarCreateAPIView.as_view(), name='avatar-create'),
-        path('delete/<uuid:uuid>', DeleteAvatarModelAPIView.as_view(), name="avatar-update"),
+        path('delete/<uuid:uuid>', DeleteAvatarModelAPIView.as_view(), name="avatar-delete"),
         path('retrieve', RetrieveAvatarAPIView.as_view(), name="avatar-retrieve"),
     ]))
 ]

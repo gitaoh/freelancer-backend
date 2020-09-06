@@ -131,10 +131,10 @@ class Defaults(MinimalModel):
                              limit_choices_to={'is_active': True, 'is_staff': False}, to_field='username')
     writer = models.ForeignKey(to_field='username', to=Writer, on_delete=models.SET_DEFAULT, default=None,
                                limit_choices_to={'is_active': True}, null=True)
-    academic = models.CharField(choices=EducationLevelChoices.choices, default=None, null=True,
-                                max_length=17, help_text=_('Client default academic level'))
+    academic = models.CharField(choices=EducationLevelChoices.choices, default=EducationLevelChoices.__empty__,
+                                null=False, max_length=17, help_text=_('Client default academic level'))
     native = models.BooleanField(help_text=_('Client Only wants native English writers to work on their order'),
-                                 default=False)
+                                 default=False, null=False)
     topic = models.CharField(max_length=200, null=True,
                              help_text=_("Topic a would like to always requests their paper to be done"))
     paper = models.CharField(max_length=200, null=True,

@@ -137,7 +137,7 @@ class AvatarModelSerializer(serializers.ModelSerializer, UUIDGenerator):
             **validated_data,
             user=self.context['request'].user,
             uuid=self.generate_uuid(),
-            is_avatar=True,
+            is_avatar=True
         )
 
 
