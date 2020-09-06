@@ -1,6 +1,5 @@
 from django.test import TestCase
-from app.models import Rating
-from authapp.models import User
+from authapp.models import Rating, User
 from mixer.backend.django import mixer
 
 
@@ -49,8 +48,7 @@ class RatingModelTestcase(TestCase):
         Test configured fields in the client column in the model
         """
         client = self.model._meta.get_field(field_name='client')
-        self.assertTrue(client.null)
-        self.assertIsNone(client.default)
+        self.assertFalse(client.null)
 
     def test_default_test_data_was_created(self):
         """

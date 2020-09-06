@@ -60,14 +60,12 @@ class WriterModelTestCase(TestCase):
         field = self.model._meta.get_field('first_name')
         self.assertEqual(field.verbose_name, 'first name')
         self.assertEqual(field.max_length, 30)
-        self.assertTrue(field.blank)
         self.assertIsNotNone(field.help_text)
 
     def test_last_name_col_(self):
         field = self.model._meta.get_field('last_name')
         self.assertEqual(field.verbose_name, 'last name')
         self.assertEqual(field.max_length, 150)
-        self.assertTrue(field.blank)
         self.assertIsNotNone(field.help_text)
 
     def test_email_address_col_(self):

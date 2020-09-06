@@ -24,7 +24,7 @@ class DefaultModelTestCase(TestCase):
         self.assertEqual(meta.model.__name__, 'Defaults')
         self.assertEqual(meta.verbose_name, 'Default')
         self.assertEqual(meta.verbose_name_plural, 'Defaults')
-        self.assertEqual(meta.db_table, 'Defaults')
+        self.assertEqual(meta.db_table, 'Default')
 
     def test_number_of_fields_(self):
         """
@@ -81,7 +81,6 @@ class DefaultModelTestCase(TestCase):
     def topic_paper_format_(self, name):
         field = self.model._meta.get_field(field_name=name)
         self.assertTrue(field.null)
-        self.assertTrue(field.blank)
         self.assertEqual(field.max_length, 200)
         self.assertIsNotNone(field.help_text)
 
@@ -120,7 +119,6 @@ class DefaultModelTestCase(TestCase):
         self.assertIsNone(academic.default)
         self.assertEqual(len(academic.choices), 6)
         self.assertTrue(academic.null)
-        self.assertTrue(academic.blank)
 
         for i in academic.choices:
             self.assertEqual(len(i), 2)
@@ -131,11 +129,11 @@ class DefaultModelTestCase(TestCase):
         Test the user column
         """
         user = self.model._meta.get_field(field_name='user')
-        self.assertEqual(user.default, 'deleted')
+        self.assertIsNone(user.default)
 
     def test_writer_column(self):
         """
         Test the writer column
         """
         writer = self.model._meta.get_field(field_name='writer')
-        self.assertEqual(writer.default, 'deleted')
+        self.assertIsNone(writer.default)

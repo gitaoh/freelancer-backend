@@ -18,7 +18,7 @@ class UserModelTestCase(TestCase):
         """
         cls.model = User
         cls.default = 'joseph'
-        cls.model_data = mixer.blend(cls.model, username=cls.default)
+        cls.model_data = mixer.blend(cls.model, username=cls.default, is_active=True)
 
     def test_meta_class(self):
         """
@@ -36,7 +36,7 @@ class UserModelTestCase(TestCase):
         Test the total number of fields defined in the model
         """
         number = list(self.model._meta.get_fields())
-        self.assertEqual(len(number), 30)
+        self.assertEqual(len(number), 32)
 
     def test_is_subclass(self):
         """
@@ -77,7 +77,6 @@ class UserModelTestCase(TestCase):
         """
         phone = self.model._meta.get_field(field_name='phone_number')
         self.assertTrue(phone.null)
-        self.assertTrue(phone.blank)
         self.assertTrue(phone.unique)
         self.assertIsNotNone(phone.help_text)
         self.assertEqual(len(phone.validators), 3)
@@ -125,3 +124,54 @@ class UserModelTestCase(TestCase):
         self.assertFalse(email.blank)
         self.assertTrue(email.unique)
         self.assertEqual(len(email.validators), 3)
+
+    def test_active_method(self):
+        """
+        User is currently active
+        """
+        objects = self.model.objects.first()
+        self.assertTrue(objects.active)
+
+    def test_deactivate_method(self):
+        """
+        Deactivate an account
+        """
+        objects = self.model.objects.first()
+        objects.deactivate()
+        self.assertFalse(objects.is_superuser)
+        self.assertFalse(objects.is_staff)
+        self.assertFalse(objects.is_active)
+        self.assertFalse(objects.active)
+
+    def test_make_admin_method(self):
+        """
+        Make the current user an admin
+        """
+        objects = self.model.objects.first()
+        objects.make_admin()
+        self.assertTrue(objects.is_superuser)
+        self.assertTrue(objects.is_staff)
+        self.assertTrue(objects.is_active)
+        self.assertEqual(objects.user_type, "ADMIN")
+
+    def test_make_master_admin_method(self):
+        """
+        make the current user a master admin
+        """
+        objects = self.model.objects.first()
+        objects.make_master()
+        self.assertTrue(objects.is_superuser)
+        self.assertTrue(objects.is_staff)
+        self.assertTrue(objects.is_active)
+        self.assertEqual(objects.user_type, "MASTER")
+
+    def test_make_user_method(self):
+        """
+        make the current admin/master a user/client
+        """
+        objects = self.model.objects.first()
+        objects.make_user()
+        self.assertFalse(objects.is_superuser)
+        self.assertFalse(objects.is_staff)
+        self.assertTrue(objects.is_active)
+        self.assertEqual(objects.user_type, "USER")

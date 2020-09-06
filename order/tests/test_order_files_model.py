@@ -83,7 +83,6 @@ class FilesModelTestCase(TestCase):
         Discipline column Test
         """
         description = self.model._meta.get_field(field_name='description')
-        self.assertTrue(description.blank)
         self.assertTrue(description.null)
         self.assertIsNotNone(description.help_text)
         self.assertEqual(description.max_length, 200)

@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
-from authapp.views import RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView
+from authapp.views import (
+    RegisterAPI, LoginAPI, AuthUserAPIView, UserUpdatePasswordApiView, UserDeleteApiView,
+    RatingCreateAPIView)
 from knox import views as knox_views
 
 
@@ -18,6 +20,7 @@ class AuthAppUrlsTestCase(TestCase):
         cls.current_app = 'authapp'
         cls.register = reverse(viewname="authapp:register-auth-app", current_app=cls.current_app)
         cls.login = reverse(viewname='authapp:login', current_app=cls.current_app)
+        cls.rating_create = reverse(viewname='authapp:rating-create', current_app=cls.current_app)
         cls.logout = reverse(viewname='authapp:logout', current_app=cls.current_app)
         cls.logout_all = reverse(viewname='authapp:logout-all', current_app=cls.current_app)
         cls.register_user = reverse(viewname="authapp:retrieve-user", current_app=cls.current_app)
@@ -103,6 +106,30 @@ class AuthAppUrlsTestCase(TestCase):
         Test the delete user api endpoint configured fields ie route, name, endpoint, kwargs
         """
         self.common_test_case_auth_app(test_name="delete user", url_name='delete-user',
-                                       route_name=self.delete_user,view_class=UserDeleteApiView,
+                                       route_name=self.delete_user, view_class=UserDeleteApiView,
                                        route="api/v1/auth/users/delete/<str:username>",
                                        kwargs={"username": "username"})
+
+    def common_(self, view_name, func, url, url_name, app_name='authapp', args=None, kwargs=None):
+        response = resolve(view_name)
+        if args is None:
+            args = ()
+        if kwargs is None:
+            kwargs = {}
+        self.assertEqual(response.args, args)
+        self.assertEqual(len(response.app_names), 1)
+        self.assertEqual(response.namespace, app_name)
+        self.assertIn(response.namespace, response.namespaces)
+        self.assertEqual(response.route, url)
+        self.assertEqual(response.app_name, app_name)
+        self.assertIn(app_name, response.app_names)
+        self.assertEqual(response.func.view_class, func)
+        self.assertEqual(response.url_name, url_name)
+        self.assertEqual(response.kwargs, kwargs)
+
+    def test_rating_create_url(self):
+        """
+        Create a rating for kromon
+        """
+        self.common_(view_name=self.rating_create, func=RatingCreateAPIView, url_name="rating-create",
+                     url="api/v1/auth/rating/create")

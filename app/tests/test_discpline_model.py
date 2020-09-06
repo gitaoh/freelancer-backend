@@ -70,7 +70,12 @@ class DisciplineModelTestcase(TestCase):
         Test the number of fields/column allowed to be in the model
         """
         fields = list(self.model._meta.get_fields(include_hidden=True, include_parents=True))
-        self.assertEqual(len(fields), 7)
+        self.assertEqual(len(fields), 9)
+
+    def test_is_active_column(self):
+        active = self.model._meta.get_field(field_name='is_active')
+        self.assertTrue(active.default)
+        self.assertFalse(active.null)
 
     def test_default_model_data_modified(self):
         """
