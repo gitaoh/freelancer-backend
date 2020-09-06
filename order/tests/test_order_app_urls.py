@@ -85,11 +85,7 @@ class OrdersUrlsTestCase(TestCase):
         response = resolve(self.users_order)
         self.app_name_namespace(response=response)
         self.assertEqual(response.func.view_class, UsersSpecificOrders,
-<<<<<<< HEAD
-                          msg='Route to retrieve a all user orders has changed')
-=======
                          msg='Route to retrieve a all user orders has changed')
->>>>>>> e35ff143f1b3bf3543cc4439acc37c4fba093e36
         self.assertEqual(response.url_name, 'users-order', msg='Route name to retrieve users orders has changed.')
         self.assertEqual(response.route, 'api/v1/orders/', msg='Route to retrieve orders has changed.')
         self.assertEqual(response.kwargs, {}, msg='Route to fetch users orders does not accept any Keyword arguments.')
