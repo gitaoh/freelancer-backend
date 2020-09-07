@@ -4,6 +4,7 @@ from rest_framework.generics import (CreateAPIView, ListAPIView, DestroyAPIView,
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
+from .choices import MessageStatusChoices, NotificationChoices
 from .serializers import OrderSerializer, OrderFilesSerializer, CancelModeSerializer, MessageModelSerializer, \
     WriterModelSerializer, RetrieveWriterModelSerializer
 from .models import Files, Order, Cancel, Writer, Message
@@ -30,13 +31,14 @@ class UsersSpecificOrders(ListAPIView):
     Get all User Specific Orders
     """
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsUser | IsMiniAdmin | IsMasterAdmin)
+    # Todo look into eg. should we query or...
+    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
     model = Order
     serializer_class = OrderSerializer
     http_method_names = ['get']
 
     def get_queryset(self):
-        return self.model.objects.all().filter(user=self.request.user.id, is_paper=True)
+        return self.model.objects.all().filter(user=self.request.user, is_paper=True, deleted_by__isnull=True)
 
 
 class GetOrdersApiView(ListAPIView):
@@ -383,6 +385,24 @@ class ListMessageAPIView(ListAPIView):
         return self.model.objects.all().filter(is_notify=True, deletedAt__isnull=True)
 
 
+class ListMessageToAdminAPIView(ListAPIView):
+    """
+    A list of all message of an order send by client to the writer or support
+    """
+    serializer_class = MessageModelSerializer
+    model = Message
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsUser | IsMasterAdmin | IsMiniAdmin, IsAuthenticated)
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(is_notify=True, deletedAt__isnull=True)
+
+    def get_object(self):
+        return self.model.objects.all().filter(is_notify=True, deletedAt__isnull=True,
+                                               notify=NotificationChoices.ToWRITER | NotificationChoices.ToSUPPORT,
+                                               status__exact=MessageStatusChoices.ACTIVE)
+
+
 class DeleteMessageAPIView(DestroyAPIView):
     """
     Delete a message
@@ -404,7 +424,7 @@ class CreateWriterAPIView(CreateAPIView):
     model = Writer
     serializer_class = WriterModelSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsUser | IsMasterAdmin | IsMiniAdmin, IsAuthenticated)
 
     def get_queryset(self):
         return self.model.objects.all()
@@ -416,12 +436,12 @@ class DeleteWriterAPIView(DestroyAPIView):
     model = Writer
     serializer_class = RetrieveWriterModelSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
+    permission_classes = (IsUser | IsMasterAdmin | IsMiniAdmin, IsAuthenticated)
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
 
     def get_queryset(self):
-        return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
+        return self.model.objects.all().filter(is_active=False, deletedAt__isnull=False)
 
     def perform_destroy(self, instance):
         instance.deactivate()
@@ -433,7 +453,7 @@ class ActivateWriterAPIView(UpdateAPIView):
     model = Writer
     serializer_class = RetrieveWriterModelSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
+    permission_classes = (IsUser | IsMasterAdmin | IsMiniAdmin, IsAuthenticated)
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
 
@@ -450,7 +470,7 @@ class RetrieveWriterAPIView(RetrieveAPIView):
     model = Writer
     serializer_class = RetrieveWriterModelSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
+    permission_classes = (IsUser | IsMasterAdmin | IsMiniAdmin, IsAuthenticated)
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
 
@@ -464,7 +484,7 @@ class UpdateWriterAPIView(UpdateAPIView):
     model = Writer
     serializer_class = RetrieveWriterModelSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsUser | IsMasterAdmin | IsMiniAdmin, IsAuthenticated)
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
 
@@ -478,7 +498,7 @@ class RetrieveWriterActiveAPIView(ListAPIView):
     model = Writer
     serializer_class = RetrieveWriterModelSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsUser | IsMasterAdmin)
+    permission_classes = (IsUser | IsMasterAdmin | IsMiniAdmin, IsAuthenticated)
 
     def get_queryset(self):
         return self.model.objects.all().filter(is_active=True, deletedAt__isnull=True)
@@ -490,7 +510,7 @@ class RetrieveDeletedWriterListAPIView(ListAPIView):
     model = Writer
     serializer_class = RetrieveWriterModelSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsUser | IsMasterAdmin | IsMiniAdmin, IsAuthenticated)
 
     def get_queryset(self):
         return self.model.objects.all().filter(is_active=False, deletedAt__isnull=False)

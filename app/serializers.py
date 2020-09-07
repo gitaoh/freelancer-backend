@@ -56,7 +56,7 @@ class AlertModelSerializer(serializers.ModelSerializer, UUIDGenerator):
 
     class Meta:
         model = Alert
-        fields = ['title', 'description', '_from', 'to', '_type']
+        fields = ['title', 'description', '_from', 'to', '_type', 'status']
 
     def create(self, validated_data):
         return self.model.objects.create(

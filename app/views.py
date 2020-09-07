@@ -50,7 +50,7 @@ class RetrievePaperTypeAPIView(RetrieveAPIView):
     """
     Get information of a single paper type
     """
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated, IsMasterAdmin | IsUser)
     http_method_names = ['get']
     serializer_class = DisciplineGetSerializer
     authentication_classes = (TokenAuthentication,)
@@ -161,7 +161,7 @@ class PaperTypeCreateAPIView(CreateAPIView):
     Create a new paper type
     """
     http_method_names = ['post']
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated, IsUser)
     serializer_class = PaperTypeSerializer
     authentication_classes = (TokenAuthentication,)
     model = PaperType
@@ -178,7 +178,7 @@ class RetrieveSpecificPaperTypeAPIView(ListAPIView):
     http_method_names = ['get']
     authentication_classes = (TokenAuthentication,)
     serializer_class = PaperTypeSerializer
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated, IsMasterAdmin | IsUser)
     model = PaperType
 
     def get_queryset(self):
@@ -191,7 +191,7 @@ class RetrieveAllPaperTypeAPIView(ListAPIView):
     """
     serializer_class = DisciplineGetSerializer
     http_method_names = ['get']
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated, IsMasterAdmin | IsUser)
     authentication_classes = (TokenAuthentication,)
     model = PaperType
 
@@ -206,7 +206,7 @@ class RetrieveDeletedPaperTypeAPIView(ListAPIView):
     authentication_classes = (TokenAuthentication,)
     http_method_names = ['get']
     serializer_class = DisciplineGetSerializer
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated, IsMasterAdmin | IsUser)
     model = PaperType
 
     def get_queryset(self):
@@ -220,7 +220,7 @@ class RetrieveTotalAllPaperTypeAPIView(ListAPIView):
     serializer_class = DisciplineGetSerializer
     http_method_names = ['get']
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated, IsUser)
     model = PaperType
 
     def get_queryset(self):
@@ -235,7 +235,7 @@ class UpdatePaperTypeAPIView(UpdateAPIView):
 
     serializer_class = PaperTypeSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated, IsMasterAdmin | IsUser)
     http_method_names = ['put', 'patch']
     lookup_url_kwarg = 'uuid'
     lookup_field = 'uuid'
@@ -253,7 +253,7 @@ class DeletePaperTypeAPIView(DestroyAPIView):
 
     serializer_class = PaperTypeSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, IsMasterAdmin)
+    permission_classes = (IsAuthenticated, IsMasterAdmin | IsUser)
     http_method_names = ['delete']
     lookup_url_kwarg = 'uuid'
     lookup_field = 'uuid'
@@ -273,7 +273,7 @@ class AlertCreateAPIView(CreateAPIView):
     authentication_classes = (TokenAuthentication,)
     model = Alert
     http_method_names = ['post']
-    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    permission_classes = (IsMasterAdmin | IsUser, IsAuthenticated)
     serializer_class = AlertModelSerializer
 
     def get_queryset(self):
@@ -286,7 +286,7 @@ class UpdateAlertAPIView(UpdateAPIView):
     """
     authentication_classes = (TokenAuthentication,)
     model = Alert
-    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    permission_classes = (IsMasterAdmin | IsUser, IsAuthenticated)
     serializer_class = AlertModelSerializer
     http_method_names = ['put', 'patch']
     lookup_field = 'uuid'
@@ -305,7 +305,7 @@ class RetrieveSingleAlertAPIView(RetrieveAPIView):
     http_method_names = ['get']
     serializer_class = AlertModelDeletedSerialize
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    permission_classes = (IsMasterAdmin | IsUser, IsAuthenticated)
     model = Alert
 
     def get_queryset(self):
@@ -319,7 +319,7 @@ class RetrieveAlertAPIView(ListAPIView):
     http_method_names = ['get']
     authentication_classes = (TokenAuthentication,)
     model = Alert
-    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    permission_classes = (IsMasterAdmin | IsUser, IsAuthenticated)
     serializer_class = AlertModelSerialize
 
     def get_queryset(self):
@@ -333,7 +333,7 @@ class RetrieveInActiveAlertAPIView(ListAPIView):
     http_method_names = ['get']
     authentication_classes = (TokenAuthentication,)
     model = Alert
-    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    permission_classes = (IsMasterAdmin | IsUser, IsAuthenticated)
     serializer_class = AlertModelDeletedSerialize
 
     def get_queryset(self):
@@ -350,14 +350,14 @@ class DeleteAlertAPIView(DestroyAPIView):
     model = Alert
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
-    permission_classes = (IsMasterAdmin, IsAuthenticated)
+    permission_classes = (IsMasterAdmin | IsUser, IsAuthenticated)
 
     def get_queryset(self):
         return self.model.objects.all().filter(is_active=True)
 
     def perform_destroy(self, instance):
         """ Trash the alert """
-        instance.deleted_by = self.request.query_params
+        instance.deleted_by = self.request.user
         instance.save()
         instance.trash()
 
