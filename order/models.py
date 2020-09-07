@@ -20,8 +20,6 @@ class Writer(MinimalModel):
     username = models.CharField(_('username'), max_length=150, unique=True, validators=[username_validator],
                                 help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
                                 error_messages={'unique': _("A user with this username already exists.")})
-    first_name = models.CharField(_('first name'), max_length=30, help_text=_("Writer first name."))
-    last_name = models.CharField(_('last name'), max_length=150, help_text=_("Writer last name."))
     bio = models.TextField(null=True)
     email = models.EmailField(_('email address'), unique=True, help_text=_("Writer email."))
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Writer is active/deactivated'))
@@ -153,6 +151,7 @@ class Order(MinimalModel):
         """ Delete/trash an order """
         self.is_paper = False
         self.deletedAt = now()
+        self.status = StatusChoices.__empty__
         self.save()
 
     def cancel(self):

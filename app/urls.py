@@ -49,6 +49,8 @@ urlpatterns = [
         path('update/<uuid:uuid>', UpdatePaperTypeAPIView.as_view(), name="paper-type-update"),
         path('delete/<uuid:uuid>', DeletePaperTypeAPIView.as_view(), name="paper-type-delete"),
     ])),
+
+
     path("alert/", include([
         path('create', AlertCreateAPIView.as_view(), name="alert-create"),
         path('retrieve/', include([

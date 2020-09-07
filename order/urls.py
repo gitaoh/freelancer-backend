@@ -5,7 +5,7 @@ from .views import (
     CreateCancelReasonAPIView, DeleteCancelReasonAPIView, OrderFilesApiView, OrderFileRetrieveAPIView,
     OrderFileRetrieveListAPIView, OrderFilesDeleteApiView, OrderUpdateApiView, MessageCreateAPIView, ListMessageAPIView,
     DeleteMessageAPIView, CreateWriterAPIView, RetrieveWriterAPIView, RetrieveWriterActiveAPIView, UpdateWriterAPIView,
-    DeleteWriterAPIView, ActivateWriterAPIView, RetrieveDeletedWriterListAPIView)
+    DeleteWriterAPIView, ActivateWriterAPIView, RetrieveDeletedWriterListAPIView, ListMessageToAdminAPIView)
 
 app_name = "order"
 
@@ -15,15 +15,18 @@ urlpatterns = [
     path('details/<uuid:uuid>', SingleUsersSpecificOrdersApiView.as_view(), name="single-user-order"),
     path('update/<uuid:uuid>', OrderUpdateApiView.as_view(), name="order-update"),
     path('delete/<uuid:uuid>', OrderDeleteApiView.as_view(), name="delete-user-order"),
+
     path('admin/', include([
         path('single/<uuid:uuid>', SingleTOAdminsOrderApiView.as_view(), name="admin-single")
     ])),
+
     path('files/', include([
         path('create', OrderFilesApiView.as_view(), name='files-create'),
         path('retrieve/<uuid:uuid>', OrderFileRetrieveAPIView.as_view(), name="file-retrieve"),
         path('retrieve/list', OrderFileRetrieveListAPIView.as_view(), name="file-retrieve"),
         path('delete/<uuid:uuid>', OrderFilesDeleteApiView.as_view(), name='files-delete')
     ])),
+
     # Before approving on frontend put up some checks for the user to verify
     path('approve/<uuid:uuid>', OrderApproveAPIView.as_view(), name="order-approve"),
     path('disapprove/<uuid:uuid>', OrderDisApproveAPIView.as_view(), name="order-dis-approve"),
@@ -33,12 +36,17 @@ urlpatterns = [
         path('create', CreateCancelReasonAPIView.as_view(), name="cancel-create"),
         path('delete/<uuid:uuid>', DeleteCancelReasonAPIView.as_view(), name="cancel-delete")
     ])),
+
     path('message/', include([
         path('create', MessageCreateAPIView.as_view(), name="message-create"),
-        path('retrieve/all', ListMessageAPIView.as_view(), name="message-list"),
+        path('retrieve/', include([
+            path('all', ListMessageAPIView.as_view(), name="message-list"),
+            path('to/admin', ListMessageToAdminAPIView.as_view(), name="message-list-admin")
+        ])),
         path('delete/<uuid:uuid>', DeleteMessageAPIView.as_view(), name="message-delete")
     ])),
-    path('writer/', include([
+
+    path('writers/', include([
         path('create', CreateWriterAPIView.as_view(), name='writer-create'),
         path('retrieve/', include([
             path('get/<uuid:uuid>', RetrieveWriterAPIView.as_view(), name="writer-single-retrieve"),

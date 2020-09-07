@@ -144,7 +144,7 @@ class MessageModelSerializer(serializers.ModelSerializer, UUIDGenerator):
 class RetrieveWriterModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Writer
-        fields = ['uuid', 'first_name', 'last_name', 'username', 'level', 'bio', 'createdAt', 'updatedAt']
+        fields = ['uuid', 'username', 'level', 'email', 'bio', 'createdAt', 'updatedAt', 'is_active']
 
 
 class WriterModelSerializer(serializers.ModelSerializer, UUIDGenerator):
@@ -152,7 +152,7 @@ class WriterModelSerializer(serializers.ModelSerializer, UUIDGenerator):
 
     class Meta:
         model = Writer
-        fields = ['username', 'level', 'first_name', 'last_name', 'email', 'bio']
+        fields = ['username', 'level', 'email', 'bio']
 
     def create(self, validated_data):
         return self.model.objects.create(
